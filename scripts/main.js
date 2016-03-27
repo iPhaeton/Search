@@ -37,7 +37,34 @@ function Tree (text) {
 
 };
 
+Tree.prototype.search = function (str) {
+    if (str.length === 1) return this[str].indecies;
+
+    var result = {};
+
+    var currentSymbol = str.charAt(0),
+        nextSymbol = str.charAt(1),
+        previousSymbol = currentSymbol;
+    if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return null;
+    for (var index in this[currentSymbol].children[nextSymbol]) {
+        result[index] = null;
+    };
+
+    for (var i = 1; i < str.length - 1; i++) {
+        currentSymbol = str.charAt(i),
+        nextSymbol = str.charAt(i + 1);
+        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return null;
+
+        for (var index in this[currentSymbol].parents[previousSymbol]) {
+            if (this[currentSymbol].children[nextSymbol][index] === undefined) delete result[index - i];
+        };
+
+        previousSymbol = currentSymbol;
+    };
+
+    return result;
+};
 
 var p = document.querySelector("p");
 var tree = new Tree(p.textContent);
-
+var matches = tree.search("ear");
