@@ -4,7 +4,9 @@
 
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (text) {
+function Tree (text, parentElem) {
+
+	this.parentElem = parentElem;
 
     var current,
         previous,
@@ -44,8 +46,9 @@ function Tree (text) {
 
 };
 
+//Search by a letter colocation
 Tree.prototype.search = function (str) {
-    if (str.length === 1) return this[str].indecies;
+    if (str.length === 1) return {points: this[str].indecies, offset: str.length};
 
     var result = new Set ();
 
@@ -71,13 +74,27 @@ Tree.prototype.search = function (str) {
         previousSymbol = currentSymbol;
     };
 
-    return result;
+    return {points: result, offset: str.length};
 };
+
+//Selection of found matches after search
+Tree.prototype.select = function (startPoints) {
+	var points = startPoints.points,
+		offset = startPoints.offset;
+
+	var selection = window.getSelection ();
+	selection.removeAllRanges ();
+	for (var startPoint of points) {
+		var range = document.createRange ();
+		range.setStart (this.parentElem.firstChild, startPoint);
+		range.setEnd (this.parentElem.firstChild, startPoint + offset);
+		
+		selection.addRange (range);
+	};
+};
+
 
 var p = document.querySelector("p");
-var tree = new Tree(p.textContent);
-var matches = tree.search("the");
-
-for (var i of matches) {
-	alert (i);
-};
+var tree = new Tree(p.textContent, p);
+var matches = tree.search("ear");
+tree.select (matches);
