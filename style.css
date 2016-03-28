@@ -1,0 +1,25 @@
+#search-panel {
+	background-color:#eee;
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	border:1px solid #aaa;
+	padding:5px;
+	box-sizing:border-box;
+}
+
+.close-button {
+	width:20px;
+	height:20px;
+	background-color:#aaa;
+	float:right;
+}
+
+#search-input {
+	float:left;
+}
+
+.clear-offset {
+	clear:both;
+}
