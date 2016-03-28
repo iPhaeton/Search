@@ -5,7 +5,7 @@
 
 
 var p = document.querySelector("p");
-var tree = new Tree(p.textContent, p);
+var tree = new Tree(p);
 var matches = tree.search("ear");
 tree.select (matches);
 

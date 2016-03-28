@@ -1,6 +1,7 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (text, parentElem) {
+function Tree (parentElem) {
+	var text = parentElem.textContent;
 
 	this.parentElem = parentElem;
 
