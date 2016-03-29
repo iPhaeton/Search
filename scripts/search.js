@@ -82,6 +82,31 @@ Tree.prototype.search = function (str) {
     return true;
 };
 
+Tree.prototype.sequentialSearch = function (symbol) {
+    this.found += symbol;
+
+    //no such symbol
+    if (!this[symbol]) return false;
+
+    //first entered symbol
+    if (!this.foundPositions.size) {
+        for (var index of this[symbol].indecies) {
+            this.foundPositions.add(index);
+        };
+        return true;
+    };
+
+    //next symbols
+    var previousSymbol = this.found.charAt(this.found.length - 2);
+    if (!this[symbol].parents[previousSymbol]) return false; //no connection to the previous entered symbol
+
+    for (var index of this.foundPositions) {
+        index += this.found.length - 1;
+        if (!this[symbol].parents[previousSymbol].has(index)) this.foundPositions.delete (index - this.found.length + 1);
+    };
+    return true;
+};
+
 /*Tree.prototype.search = function (str) {
 	var start = this.found.length;
 	this.found += str;
