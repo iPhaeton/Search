@@ -75,7 +75,7 @@ Tree.prototype.search = function (str) {
 };
 
 //Selection of found matches after search
-Tree.prototype.select = function (startPoints) {
+Tree.prototype.select = function (startPoints, selectionStyle) {
 	var points = startPoints.points,
 		offset = startPoints.offset,
 		previousStartPoint = 0;
@@ -98,8 +98,8 @@ Tree.prototype.select = function (startPoints) {
 		range.setEnd (this.parentElem.childNodes[j], end);
 		
 		var highLight = document.createElement ("span");
-		highLight.style.backgroundColor = "blue";
 		highLight.classList.add ("highlight");
+		highLight.style.cssText = selectionStyle;
 		
 		range.surroundContents (highLight);
 		

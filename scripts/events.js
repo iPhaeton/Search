@@ -1,3 +1,4 @@
+//document
 function documentKeyDown (event) {
 	if (event.ctrlKey && event.keyCode === 70) {
 		showSearchPanel ();
@@ -17,7 +18,17 @@ function documentClick (event) {
 	tree.deselect ();
 };
 
+//search on pressing Enter
+function searchPanelKeyDown (event) {
+	if (event.keyCode === 13) {
+		tree.deselect ();
+		var searchInput = document.getElementById ("search-input");
+		var matches = tree.search (searchInput.value);
+		tree.select (matches, "background-color: rgb(150, 255, 100)");
+	};
+};
 
+//---------------------------------------------------------------------------------------------------------------------------------------
 function showSearchPanel () {
 	var searchPanel = document.getElementById ("search-panel");
 	
@@ -31,6 +42,10 @@ function showSearchPanel () {
 		fakePanel.style.height = searchPanel.offsetHeight + "px";
 		fakePanel.style.display = "block";
 		document.body.insertBefore (fakePanel, document.body.firstChild);
+		
+		//focus on the input
+		var searchInput = document.getElementById ("search-input");
+		searchInput.focus();
 	}
 	//hide search panel
 	else {
