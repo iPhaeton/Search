@@ -36,7 +36,7 @@ function showSearchPanel () {
 	if (searchPanel.hidden) {
 		searchPanel.hidden = "";
 	
-		//to the beginning of the document insert a div a panel height to scroll the document down
+		//to the beginning of the document insert a div of panel height to scroll the document down
 		var fakePanel = document.createElement("div");
 		fakePanel.id = "fake-panel"
 		fakePanel.style.height = searchPanel.offsetHeight + "px";

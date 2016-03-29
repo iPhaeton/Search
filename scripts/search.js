@@ -40,7 +40,7 @@ function Tree (parentElem) {
         previousIndex = i;
 
     };
-
+	
 };
 
 //Search by a letter colocation
@@ -109,18 +109,15 @@ Tree.prototype.select = function (startPoints, selectionStyle) {
 };
 
 Tree.prototype.deselect = function () {
-	//cancel all the selections
-	var highLights = this.parentElem.getElementsByClassName ("highlight");
-	for (var i = 0; i < highLights.length; i++) {
-		var elem = this.parentElem.firstChild;
-		this.parentElem.insertBefore (highLights[i].firstChild, highLights[i]);
-		this.parentElem.removeChild (highLights[i--]);
+	//to keep text content of parent element in one node,
+	//I delete all nodes from the element and replace them
+	//with one text node which contains whole text,
+	//just as it was before selection
+	var content = "";
+	var nodes = this.parentElem.childNodes;
+	for (var i = 0; i < nodes.length; i++) {
+		content += nodes[i].textContent;
+		this.parentElem.removeChild (nodes[i--]);
 	};
-	
-	//and join the text back together
-	var textNodes = this.parentElem.childNodes;
-	for (i = 1; i < textNodes.length; i++) {
-		this.parentElem.firstChild.data += textNodes[i].data;
-		this.parentElem.removeChild (textNodes[i--]);
-	};
+	this.parentElem.textContent = content;
 };
