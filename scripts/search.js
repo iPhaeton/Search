@@ -77,15 +77,50 @@ Tree.prototype.search = function (str) {
 //Selection of found matches after search
 Tree.prototype.select = function (startPoints) {
 	var points = startPoints.points,
-		offset = startPoints.offset;
+		offset = startPoints.offset,
+		previousStartPoint = 0;
 
-	var selection = window.getSelection ();
-	selection.removeAllRanges ();
+	var j = 0; //when a span is added to a text node, text is being divided, so I need to cout the amount of nodes
+		
 	for (var startPoint of points) {
 		var range = document.createRange ();
-		range.setStart (this.parentElem.firstChild, startPoint);
-		range.setEnd (this.parentElem.firstChild, startPoint + offset);
 		
-		selection.addRange (range);
+		if (!j) {
+			var start = startPoint - previousStartPoint;
+			var end = startPoint - previousStartPoint + offset;
+		}
+		else {
+			var start = startPoint - previousStartPoint - offset;
+			var end = startPoint - previousStartPoint;
+		}
+		
+		range.setStart (this.parentElem.childNodes[j], start);
+		range.setEnd (this.parentElem.childNodes[j], end);
+		
+		var highLight = document.createElement ("span");
+		highLight.style.backgroundColor = "blue";
+		highLight.classList.add ("highlight");
+		
+		range.surroundContents (highLight);
+		
+		j += 2;
+		previousStartPoint = startPoint;
+	};
+};
+
+Tree.prototype.deselect = function () {
+	//cancel all the selections
+	var highLights = this.parentElem.getElementsByClassName ("highlight");
+	for (var i = 0; i < highLights.length; i++) {
+		var elem = this.parentElem.firstChild;
+		this.parentElem.insertBefore (highLights[i].firstChild, highLights[i]);
+		this.parentElem.removeChild (highLights[i--]);
+	};
+	
+	//and join the text back together
+	var textNodes = this.parentElem.childNodes;
+	for (i = 1; i < textNodes.length; i++) {
+		this.parentElem.firstChild.data += textNodes[i].data;
+		this.parentElem.removeChild (textNodes[i--]);
 	};
 };

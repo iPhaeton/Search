@@ -13,6 +13,11 @@ function documentKeyPress (event) {
 	};
 };
 
+function documentClick (event) {
+	tree.deselect ();
+};
+
+
 function showSearchPanel () {
 	var searchPanel = document.getElementById ("search-panel");
 	
