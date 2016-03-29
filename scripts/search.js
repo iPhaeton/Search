@@ -41,43 +41,102 @@ function Tree (parentElem) {
 
     };
 	
+	this.found = ""; //text which was found and selected, initially empty
+	this.foundPositions = new Set (); //positions of existing selections, initially empty
+	
 };
 
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
-    if (str.length === 1) return {points: this[str].indecies, offset: str.length};
-
-    var result = new Set ();
+	this.found = str;
+	
+    if (this.found.length === 1) {
+		for (var index of this[this.found].indecies) {
+			this.foundPositions.add (index);
+		};
+		return true;
+	};
 
 	//set result with all indecies of the first letter
-    var currentSymbol = str.charAt(0),
-        nextSymbol = str.charAt(1),
+    var currentSymbol = this.found.charAt(0),
+        nextSymbol = this.found.charAt(1),
         previousSymbol = currentSymbol;
-    if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return null;
+    if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return false;
     for (var index of this[currentSymbol].children[nextSymbol]) {
-        result.add (index);
+        this.foundPositions.add (index);
     };
 
 	//go from parent to child, if there is no next child, delete the corresponding property from result
-    for (var i = 1; i < str.length - 1; i++) {
-        currentSymbol = str.charAt(i),
-        nextSymbol = str.charAt(i + 1);
-        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return null;
+    for (var i = 1; i < this.found.length - 1; i++) {
+        currentSymbol = this.found.charAt(i),
+        nextSymbol = this.found.charAt(i + 1);
+        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return false;
 
         for (var index of this[currentSymbol].parents[previousSymbol]) {
-            if (!this[currentSymbol].children[nextSymbol].has(index)) result.delete(index - i);
+            if (!this[currentSymbol].children[nextSymbol].has(index)) this.foundPositions.delete(index - i);
         };
 
         previousSymbol = currentSymbol;
     };
 
-    return {points: result, offset: str.length};
+    return true;
 };
 
+/*Tree.prototype.search = function (str) {
+	var start = this.found.length;
+	this.found += str;
+	
+	//set initial found positions with all indecies of the first letter
+	if (!this.foundPositions.size) {
+		var currentSymbol = this.found.charAt(0),
+			nextSymbol = this.found.charAt(1),
+			previousSymbol = currentSymbol;
+		
+		if (!this[currentSymbol]) return false;
+		
+		if (nextSymbol) {
+			if (!this[currentSymbol].children[nextSymbol]) return false;
+			for (var index of this[currentSymbol].children[nextSymbol]) {
+				this.foundPositions.add (index);
+			};
+		}
+		else {
+			for (var index of this[currentSymbol].indecies) {
+				this.foundPositions.add (index);
+			};
+			return true;
+		};
+	};
+
+    //go from parent to child, if there is no next child, delete the corresponding property from found positions
+	for (var i = start; i < this.found.length; i++) {
+		var currentSymbol = this.found.charAt(i),
+        var previousSymbol = this.found.charAt(i - 1);
+		
+		if (!this[currentSymbol].parents[previousSymbol]) return false;
+		
+		for (var index of this[currentSymbol].parents[previousSymbol]) {
+			
+		};
+	};
+	
+    /*for (var i = start; i < this.found.length - 1; i++) {
+        currentSymbol = this.found.charAt(i),
+        nextSymbol = this.found.charAt(i + 1);
+        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return false;
+
+        for (var index of this[currentSymbol].parents[previousSymbol]) {
+            if (!this[currentSymbol].children[nextSymbol].has(index)) this.foundPositions.delete(index - i);
+        };
+
+        previousSymbol = currentSymbol;
+    };
+};*/
+
 //Selection of found matches after search
-Tree.prototype.select = function (startPoints, selectionStyle) {
-	var points = startPoints.points,
-		offset = startPoints.offset,
+Tree.prototype.select = function (selectionStyle) {
+	var points = this.foundPositions,
+		offset = this.found.length,
 		previousStartPoint = 0;
 
 	var j = 0; //when a span is added to a text node, text is being divided, so I need to cout the amount of nodes
@@ -121,3 +180,10 @@ Tree.prototype.deselect = function () {
 	};
 	this.parentElem.textContent = content;
 };
+
+//Clear the results of the last search
+Tree.prototype.clear = function () {
+	this.deselect ();
+	this.found = "";
+	this.foundPositions.clear ();
+}
