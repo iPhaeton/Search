@@ -11,6 +11,7 @@ searchPanel.addEventListener ("keydown", searchPanelKeyDown);
 
 var searchInput = document.getElementById ("search-input");
 searchInput.addEventListener ("keypress", searchInputKeyPress);
+searchInput.addEventListener("keydown", searchInputKeyDown);
 
 var p = document.querySelector("p");
 var tree = new Tree(p);

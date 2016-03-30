@@ -1,4 +1,4 @@
-//document
+//invoke search panel
 function documentKeyDown (event) {
 	if (event.ctrlKey && event.keyCode === 70) {
 		showSearchPanel ();
@@ -14,6 +14,7 @@ function documentKeyPress (event) {
 	};
 };
 
+//deselect all
 function documentClick (event) {
 	if (findTarget (event.target, "search-panel")) return;
 	
@@ -41,9 +42,17 @@ function searchInputKeyPress (event) {
 	tree.sequentialSearch (symbol);
 	tree.sequentialSelect (); //???????????????????????????????????????????????????????
 	if (!this.value.length) tree.select ("background-color: rgb(150, 255, 100)");
+
 	//alert(tree.foundPositions.size);
 };
 
+function searchInputKeyDown (event) {
+    //alert(event.keyCode);
+
+    //store previous search result
+    //on pressing Break move last symbols from all selected spans back to text nodes
+    //select other spans according to previous search result
+};
 //---------------------------------------------------------------------------------------------------------------------------------------
 function showSearchPanel () {
 	var searchPanel = document.getElementById ("search-panel");
