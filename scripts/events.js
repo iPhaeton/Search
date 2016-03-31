@@ -29,7 +29,7 @@ function searchPanelKeyDown (event) {
 		
 		//new search
 		var searchInput = document.getElementById ("search-input");
-		if (tree.search (searchInput.value)) tree.select ("background-color: rgb(150, 255, 100)");
+		if (tree.search (searchInput.value)) tree.select ();
 	};
 };
 
@@ -39,19 +39,28 @@ function searchInputKeyPress (event) {
 	
 	if (symbol === null) return;
 	
-	tree.sequentialSearch (symbol);
-	tree.sequentialSelect (); //???????????????????????????????????????????????????????
-	if (!this.value.length) tree.select ("background-color: rgb(150, 255, 100)");
+	if (tree.sequentialSearch (symbol)) tree.sequentialDeselect ();
+	else tree.deselectAll ();
+	
+	if (!this.value.length) tree.select ();
 
 	//alert(tree.foundPositions.size);
 };
 
+//on change of the string
 function searchInputKeyDown (event) {
-    //alert(event.keyCode);
 
-    //store previous search result
-    //on pressing Break move last symbols from all selected spans back to text nodes
-    //select other spans according to previous search result
+	if (event.keyCode === 8 || event.keyCode === 46) {
+		setTimeout(function () {
+			var searchInput = document.getElementById ("search-input");
+			
+			if (!searchInput.value) tree.deselectAll (); //empty search string
+			
+			//carry out a new search, then select results, that weren't selected
+			if(tree.search(searchInput.value)) 
+				tree.sequentialSelect ();
+		}, 0);
+	};
 };
 //---------------------------------------------------------------------------------------------------------------------------------------
 function showSearchPanel () {

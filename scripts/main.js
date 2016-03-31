@@ -14,4 +14,4 @@ searchInput.addEventListener ("keypress", searchInputKeyPress);
 searchInput.addEventListener("keydown", searchInputKeyDown);
 
 var p = document.querySelector("p");
-var tree = new Tree(p);
+var tree = new Tree(p, "background-color: rgb(150, 255, 100)");
