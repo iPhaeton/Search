@@ -16,6 +16,11 @@ function documentKeyPress (event) {
 
 //deselect all
 function documentClick (event) {
+	if (findTarget (event.target, "close-button")) {
+		showSearchPanel ();
+		return;
+	}
+	
 	if (findTarget (event.target, "search-panel")) return;
 	
 	tree.deselectAll ();
