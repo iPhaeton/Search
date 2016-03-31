@@ -44,12 +44,18 @@ function searchInputKeyPress (event) {
 	
 	if (symbol === null) return;
 	
-	if (tree.sequentialSearch (symbol)) tree.sequentialDeselect ();
-	else tree.deselectAll ();
-	
-	if (!this.value.length) tree.select ();
-
-	//alert(tree.foundPositions.size);
+	setTimeout (function () {
+		var searchInput = document.getElementById ("search-input");
+			
+		if (searchInput.value.length === 1){ //only one symbol in the search line
+			tree.deselectAll ();
+			if (tree.search (symbol)) tree.select ();
+		}
+		else { //more than one symbols in the search line
+			if (tree.sequentialSearch (symbol)) tree.sequentialDeselect ();
+			else tree.deselectAll ();
+		};
+	}, 0);
 };
 
 //on change of the string
@@ -62,8 +68,13 @@ function searchInputKeyDown (event) {
 			if (!searchInput.value) tree.deselectAll (); //empty search string
 			
 			//carry out a new search, then select results, that weren't selected
-			if(tree.search(searchInput.value)) 
-				tree.sequentialSelect ();
+			if (searchInput.value === tree.found.slice(0, -1)) {
+				if(tree.search(searchInput.value)) tree.sequentialSelect ();
+			}
+			else {
+				tree.clear ();
+				if(tree.search(searchInput.value)) tree.select ();
+			};
 		}, 0);
 	};
 };
