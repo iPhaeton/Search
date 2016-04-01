@@ -34,25 +34,28 @@ function searchPanelKeyDown (event) {
 		
 		//new search
 		var searchInput = document.getElementById ("search-input");
-		if (tree.search (searchInput.value)) tree.select ();
+		if (tree.search (searchInput.value)) tree.select (tree.foundPositions);
 	};
 };
 
 //sequential search by every letter
 function searchInputKeyPress (event) {
+
 	var symbol = getChar (event);
 	
 	if (symbol === null) return;
 	
 	setTimeout (function () {
 		var searchInput = document.getElementById ("search-input");
-			
-		if (searchInput.value.length === 1){ //only one symbol in the search line
+
+		//first symbol || typing into the middle
+		if ((searchInput.value.length === 1) || (searchInput.value.slice(0, -1) !== tree.found)){ //only one symbol in the search line
 			tree.deselectAll ();
-			if (tree.search (symbol)) tree.select ();
+			if (tree.search (searchInput.value)) tree.select (tree.foundPositions);
 		}
+		//typing into the end
 		else { //more than one symbols in the search line
-			if (tree.sequentialSearch (symbol)) tree.select ();
+			if (tree.sequentialSearch (symbol)) tree.select (tree.foundPositions);
 			else tree.deselectAll ();
 		};
 	}, 0);
@@ -61,22 +64,18 @@ function searchInputKeyPress (event) {
 //on change of the string
 function searchInputKeyDown (event) {
 
+	//deletion
 	if (event.keyCode === 8 || event.keyCode === 46) {
 		setTimeout(function () {
 			var searchInput = document.getElementById ("search-input");
 			
 			if (!searchInput.value) tree.deselectAll (); //empty search string
-			
+
 			//carry out a new search, then select results, that weren't selected
-			if (searchInput.value === tree.found.slice(0, -1)) {
-				if(tree.search(searchInput.value)) tree.select ();
-			}
-			else {
-				tree.clear ();
-				if(tree.search(searchInput.value)) tree.select ();
-			};
+			if(tree.search(searchInput.value)) tree.select (tree.foundPositions);
 		}, 0);
-	};
+	}
+
 };
 //---------------------------------------------------------------------------------------------------------------------------------------
 function showSearchPanel () {

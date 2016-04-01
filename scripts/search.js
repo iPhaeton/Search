@@ -43,6 +43,7 @@ function Tree (parentElem) {
 	
 	this.found = ""; //text which was found and selected, initially empty
 	this.foundPositions = new Set (); //positions of existing selections, initially empty
+    this.previousFoundPositions = new Set (); //result of the previous search
 };
 
 //Search by a letter colocation
@@ -85,6 +86,8 @@ Tree.prototype.search = function (str) {
 };
 
 Tree.prototype.sequentialSearch = function (symbol) {
+    this.previousFoundPositions = this.cloneResults(this.foundPositions);
+
     this.found += symbol;
 
     //no such symbol
@@ -110,9 +113,8 @@ Tree.prototype.sequentialSearch = function (symbol) {
 };
 
 //Selection of found matches after search
-Tree.prototype.select = function () {
-	var points = this.foundPositions,
-		offset = this.found.length,
+Tree.prototype.select = function (points) {
+	var offset = this.found.length,
 		innerHTML = "",
 		i = 0;
 		
@@ -136,3 +138,11 @@ Tree.prototype.clear = function () {
 	this.found = "";
 	this.foundPositions.clear ();
 }
+
+Tree.prototype.cloneResults = function (set) {
+    var clone = new Set ();
+    for (var i of set) {
+        clone.add(i);
+    };
+    return clone;
+};
