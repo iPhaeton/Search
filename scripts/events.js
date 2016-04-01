@@ -52,7 +52,7 @@ function searchInputKeyPress (event) {
 			if (tree.search (symbol)) tree.select ();
 		}
 		else { //more than one symbols in the search line
-			if (tree.sequentialSearch (symbol)) tree.sequentialDeselect ();
+			if (tree.sequentialSearch (symbol)) tree.select ();
 			else tree.deselectAll ();
 		};
 	}, 0);
@@ -69,7 +69,7 @@ function searchInputKeyDown (event) {
 			
 			//carry out a new search, then select results, that weren't selected
 			if (searchInput.value === tree.found.slice(0, -1)) {
-				if(tree.search(searchInput.value)) tree.sequentialSelect ();
+				if(tree.search(searchInput.value)) tree.select ();
 			}
 			else {
 				tree.clear ();

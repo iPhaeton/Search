@@ -1,7 +1,7 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (parentElem, selectionStyle) {
-	var text = parentElem.textContent;
+function Tree (parentElem) {
+	this.text = parentElem.textContent;
 
 	this.parentElem = parentElem;
 
@@ -10,9 +10,9 @@ function Tree (parentElem, selectionStyle) {
         previousIndex;
 
 	//get every letter from the text
-    for (var i = 0; i < text.length; i++) {
+    for (var i = 0; i < this.text.length; i++) {
 
-        current = text.charAt(i);
+        current = this.text.charAt(i);
 		//if there is no such letter in the tree, create a new node for this letter and store its index
         if (this[current] === undefined) {
             this[current] = {
@@ -43,7 +43,6 @@ function Tree (parentElem, selectionStyle) {
 	
 	this.found = ""; //text which was found and selected, initially empty
 	this.foundPositions = new Set (); //positions of existing selections, initially empty
-	this.selectionStyle = selectionStyle;	
 };
 
 //Search by a letter colocation
@@ -111,113 +110,24 @@ Tree.prototype.sequentialSearch = function (symbol) {
 };
 
 //Selection of found matches after search
-Tree.prototype.select = function (existing) {
+Tree.prototype.select = function () {
 	var points = this.foundPositions,
 		offset = this.found.length,
-		previousStartPoint = 0;
-
-	var j = 0; //when a span is added to a text node, text is being divided, so I need to count the amount of nodes
+		innerHTML = "",
+		i = 0;
 		
 	for (var startPoint of points) {
-		
-		//the highlight doesn't exist yet
-		if (!existing || !existing.has(startPoint)) {
-			if (!j) {
-				var start = startPoint - previousStartPoint;
-				var end = startPoint - previousStartPoint + offset;
-			}
-			else {
-				var start = startPoint - previousStartPoint - offset;
-				var end = startPoint - previousStartPoint;
-			};
-		
-			this.createHighLight (startPoint, start, end, j);
-		};
-		
-		j += 2;
-		previousStartPoint = startPoint;
+		innerHTML += this.text.slice (i, startPoint) + "<span class='highlight' data-position='" + startPoint + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+		i = startPoint + offset;
 	};
+	
+	innerHTML += this.text.slice (startPoint + offset);
+	
+	this.parentElem.innerHTML = innerHTML;
 };
 
 Tree.prototype.deselectAll = function () {
-	//to keep text content of parent element in one node,
-	//I delete all nodes from the element and replace them
-	//with one text node which contains whole text,
-	//just as it was before selection
-	var content = "";
-	var nodes = this.parentElem.childNodes;
-	for (var i = 0; i < nodes.length; i++) {
-		content += nodes[i].textContent;
-		this.parentElem.removeChild (nodes[i--]);
-	};
-	this.parentElem.textContent = content;
-};
-
-//Deselection of previous selections which don't meet new search result
-Tree.prototype.sequentialDeselect = function () {
-	var highLights = document.getElementsByClassName ("highlight");
-	
-	for (var i = 0; i < highLights.length; i++) {
-		
-		if (!this.foundPositions.has (+highLights[i].dataset.position)) {
-			//delete a highlight
-			this.deleteHighLight (highLights[i--]);
-		}
-		else {
-			//add next symbol
-			if (highLights[i].nextSibling.textContent) var nextSibling = highLights[i].nextSibling;
-			else var nextSibling = highLights[i].nextSibling.nextSibling;
-			
-			highLights[i].textContent += nextSibling.textContent.charAt(0); //add next symbol to highlight
-			nextSibling.textContent = nextSibling.textContent.slice (1); //remove next symbol from the next sibling
-		};
-		
-	};
-};
-
-//Selection of previous selections after last symbol in search string has been deleted
-Tree.prototype.sequentialSelect = function () {
-	var highLights = document.getElementsByClassName ("highlight");
-	var existing = new Set ();
-	for (var i = 0; i < highLights.length; i++) {
-		existing.add (+highLights[i].dataset.position);
-		
-		//deselect the last symbol
-		highLights[i].nextSibling.textContent = highLights[i].textContent.slice (-1) + highLights[i].nextSibling.textContent;
-		highLights[i].textContent = highLights[i].textContent.slice (0, -1);
-	};
-	
-	this.select (existing);
-};
-
-Tree.prototype.createHighLight = function (startPoint, start, end, j) {
-	var range = document.createRange ();
-	
-	range.setStart (this.parentElem.childNodes[j], start);
-	range.setEnd (this.parentElem.childNodes[j], end);
-		
-	var highLight = document.createElement ("span");
-	highLight.classList.add ("highlight");
-	highLight.style.cssText = this.selectionStyle;
-	highLight.dataset.position = startPoint;
-		
-	range.surroundContents (highLight);
-};
-
-Tree.prototype.deleteHighLight = function (span) {
-	var content = "";
-	
-	//gather content 
-	if (span.previousSibling.nodeType === 3) content += span.previousSibling.data;
-	content += span.textContent;
-	if (span.nextSibling.nodeType === 3) content += span.nextSibling.data;
-	
-	//replace nodes with a new new node with the same content
-	var newTextNode = document.createTextNode (content);
-	if (span.previousSibling.nodeType === 3) this.parentElem.removeChild (span.previousSibling);
-	if (span.nextSibling.nodeType === 3) this.parentElem.removeChild (span.nextSibling);
-	this.parentElem.insertBefore (newTextNode, span);
-	this.parentElem.removeChild (span);
+	this.parentElem.innerHTML = this.text;
 };
 
 //Clear the results of the last search
