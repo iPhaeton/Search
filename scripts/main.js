@@ -7,17 +7,18 @@ document.addEventListener ("keypress", documentKeyPress);
 document.addEventListener ("click", documentClick);
 
 var searchPanel = document.getElementById ("search-panel");
-searchPanel.addEventListener ("keydown", searchPanelKeyDown);
+searchPanel.addEventListener("focus", searchPanelFocus, true);
 
 var searchInput = document.getElementById ("search-input");
-searchInput.addEventListener ("keypress", searchInputKeyPress);
-searchInput.addEventListener("keydown", searchInputKeyDown);
+searchInput.addEventListener("input", searchInputInput);
 
 var p = document.querySelector("p");
 var tree = new Tree(p);
 
 //------------------------------------------------------------------------------------------------------
 /*
-3. Text insertion
 4. Long strings
+5. Selection on different lines?
+6. Very long texts?
+7. Focus in Mozilla
 */

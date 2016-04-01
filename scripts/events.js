@@ -26,57 +26,33 @@ function documentClick (event) {
 	tree.deselectAll ();
 };
 
-//search on pressing Enter
-function searchPanelKeyDown (event) {
-	if (event.keyCode === 13) {
-		//clear results
-		tree.clear ();
-		
-		//new search
-		var searchInput = document.getElementById ("search-input");
-		if (tree.search (searchInput.value)) tree.select (tree.foundPositions);
+//select of search panel invoke
+function searchPanelFocus () {
+	if (findTarget(event.target, "close-button")) return;
+
+	var searchInput = document.getElementById("search-input");
+	if (tree.found && searchInput.value) tree.select(tree.foundPositions);
+	else if (!tree.found && searchInput.value) {
+		tree.search (searchInput.value);
+		tree.select(tree.foundPositions);
+	}
+};
+
+//search and select
+function searchInputInput () {
+	if (this.value.slice(0, -1) === tree.found && this.value.length > 1) {
+		if (tree.sequentialSearch (this.value.slice(-1))) tree.select (tree.foundPositions);
+		else tree.deselectAll();
+	}
+	else if (this.value.length === 0) {
+		tree.deselectAll ();
+	}
+	else {
+		if (tree.search (this.value)) tree.select (tree.foundPositions);
+		else tree.deselectAll();
 	};
 };
 
-//sequential search by every letter
-function searchInputKeyPress (event) {
-
-	var symbol = getChar (event);
-	
-	if (symbol === null) return;
-	
-	setTimeout (function () {
-		var searchInput = document.getElementById ("search-input");
-
-		//first symbol || typing into the middle
-		if ((searchInput.value.length === 1) || (searchInput.value.slice(0, -1) !== tree.found)){ //only one symbol in the search line
-			tree.deselectAll ();
-			if (tree.search (searchInput.value)) tree.select (tree.foundPositions);
-		}
-		//typing into the end
-		else { //more than one symbols in the search line
-			if (tree.sequentialSearch (symbol)) tree.select (tree.foundPositions);
-			else tree.deselectAll ();
-		};
-	}, 0);
-};
-
-//on change of the string
-function searchInputKeyDown (event) {
-
-	//deletion
-	if (event.keyCode === 8 || event.keyCode === 46) {
-		setTimeout(function () {
-			var searchInput = document.getElementById ("search-input");
-			
-			if (!searchInput.value) tree.deselectAll (); //empty search string
-
-			//carry out a new search, then select results, that weren't selected
-			if(tree.search(searchInput.value)) tree.select (tree.foundPositions);
-		}, 0);
-	}
-
-};
 //---------------------------------------------------------------------------------------------------------------------------------------
 function showSearchPanel () {
 	var searchPanel = document.getElementById ("search-panel");
