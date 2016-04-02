@@ -41,8 +41,10 @@ function searchPanelFocus (event) {
 //search and select
 function searchInputInput (event) {
 	if (this.value.slice(0, -1) === tree.found && this.value.length > 1) {
-		if (tree.sequentialSearch (this.value.slice(-1))) tree.select (tree.foundPositions);
-		else tree.deselectAll();
+		if (tree.foundPositions.size) {
+			if (tree.sequentialSearch (this.value.slice(-1))) tree.select (tree.foundPositions);
+			else tree.deselectAll();
+		};
 	}
 	else if (this.value.length === 0) {
 		tree.deselectAll ();

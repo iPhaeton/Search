@@ -1,11 +1,18 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (parentElem, simpleStyle, complexStyle) {
+function Tree (parentElem, styles) {
 	this.text = parentElem.textContent;
 
 	this.parentElem = parentElem;
-    this.simpleStyle = simpleStyle || "highlight";
-    this.complexStyle = complexStyle;
+
+    //set style
+    if (styles) {
+        this.simpleStyle = styles.simpleStyle || "default-highlight";
+        this.complexStyle = styles.complexStyle;
+    }
+    else {
+        this.simpleStyle = "default-highlight";
+    };
 
     var current,
         previous,
@@ -124,7 +131,7 @@ Tree.prototype.select = function (points) {
 		
 	for (var startPoint of points) {
 		innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.simpleStyle + "' data-position='" + startPoint +
-            "' style='display: inline-block'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
+            "' style='display: inline'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
 		i = startPoint + offset;
 	};
 	
@@ -149,7 +156,7 @@ Tree.prototype.showSelection = function (points) {
 
     for (var startPoint of points) {
         innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.complexStyle + "' data-position='" + startPoint + "'" +
-            " style='position: absolute; z-index: 100; top :" + highLights[j].offsetTop + "px; left: " + highLights[j].offsetLeft + "px;" +
+            " style='display: inline; position: absolute; z-index: 100; top :" + highLights[j].offsetTop + "px; left: " + highLights[j].offsetLeft + "px;" +
             " width: " + highLights[j].offsetWidth + "px; height: " + highLights[j++].offsetHeight + "px" +
             "'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
         i = startPoint + offset;
@@ -157,15 +164,6 @@ Tree.prototype.showSelection = function (points) {
 
     innerHTML += this.text.slice (startPoint + offset);
     this.parentElem.innerHTML = innerHTML;
-
-    /*var highLights = this.parentElem.getElementsByClassName("highlight"),
-        innerHTML = "";
-
-    for (var i = 0; i < highLights.length; i++) {
-        innerHTML += "<div class='visible-highlight' style='position: absolute; z-index: 100; top :" + highLights[i].offsetTop + "px; left: " + highLights[i].offsetLeft + "px; width: 50px; height: 20px" + "'></div>>";
-    };
-
-    return innerHTML;*/
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

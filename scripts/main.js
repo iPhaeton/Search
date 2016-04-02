@@ -13,7 +13,7 @@ var searchInput = document.getElementById ("search-input");
 searchInput.addEventListener("input", searchInputInput);
 
 var p = document.querySelector("p");
-var tree = new Tree(p);
+var tree = new Tree(p, {complexStyle: "visible-highlight"});
 
 //------------------------------------------------------------------------------------------------------
 /*
@@ -22,3 +22,9 @@ var tree = new Tree(p);
 6. Very long texts?
 7. Focus in Mozilla
 */
+
+/*
+Errors:
+1. parentElem contains not only text
+2. comlexStyle = "default-highlight"
+ */

@@ -31,12 +31,10 @@ body {
 	clear:both;
 }
 
-.highlight {
-	display: inline-block;
+.default-highlight {
 	background-color: rgb(150, 255, 100);
-	box-sizing: border-box;
 }
 
 .visible-highlight {
-	background-color: rgb(150, 255, 100);
+	background-color: rgb(255, 0, 100);
 }
