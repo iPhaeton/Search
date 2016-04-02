@@ -1,9 +1,11 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (parentElem) {
+function Tree (parentElem, simpleStyle, complexStyle) {
 	this.text = parentElem.textContent;
 
 	this.parentElem = parentElem;
+    this.simpleStyle = simpleStyle || "highlight";
+    this.complexStyle = complexStyle;
 
     var current,
         previous,
@@ -46,6 +48,7 @@ function Tree (parentElem) {
     this.previousFoundPositions = new Set (); //result of the previous search
 };
 
+//Search-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
 	if (str === this.found) return true;
@@ -112,6 +115,7 @@ Tree.prototype.sequentialSearch = function (symbol) {
     return true;
 };
 
+//Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Selection of found matches after search
 Tree.prototype.select = function (points) {
 	var offset = this.found.length,
@@ -119,26 +123,60 @@ Tree.prototype.select = function (points) {
 		i = 0;
 		
 	for (var startPoint of points) {
-		innerHTML += this.text.slice (i, startPoint) + "<div class='highlight' data-position='" + startPoint + "'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
+		innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.simpleStyle + "' data-position='" + startPoint +
+            "' style='display: inline-block'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
 		i = startPoint + offset;
 	};
 	
 	innerHTML += this.text.slice (startPoint + offset);
-	
+
 	this.parentElem.innerHTML = innerHTML;
+    if (this.complexStyle) this.showSelection(this.foundPositions);
 };
 
+//Deselect all
 Tree.prototype.deselectAll = function () {
 	this.parentElem.innerHTML = this.text;
 };
 
+Tree.prototype.showSelection = function (points) {
+    var offset = this.found.length,
+        innerHTML = this.text,
+        i = 0,
+        j = 0;
+
+    var highLights = this.parentElem.getElementsByClassName(this.simpleStyle);
+
+    for (var startPoint of points) {
+        innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.complexStyle + "' data-position='" + startPoint + "'" +
+            " style='position: absolute; z-index: 100; top :" + highLights[j].offsetTop + "px; left: " + highLights[j].offsetLeft + "px;" +
+            " width: " + highLights[j].offsetWidth + "px; height: " + highLights[j++].offsetHeight + "px" +
+            "'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
+        i = startPoint + offset;
+    };
+
+    innerHTML += this.text.slice (startPoint + offset);
+    this.parentElem.innerHTML = innerHTML;
+
+    /*var highLights = this.parentElem.getElementsByClassName("highlight"),
+        innerHTML = "";
+
+    for (var i = 0; i < highLights.length; i++) {
+        innerHTML += "<div class='visible-highlight' style='position: absolute; z-index: 100; top :" + highLights[i].offsetTop + "px; left: " + highLights[i].offsetLeft + "px; width: 50px; height: 20px" + "'></div>>";
+    };
+
+    return innerHTML;*/
+};
+
+//Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Clear the results of the last search
 Tree.prototype.clear = function () {
 	this.deselectAll ();
 	this.found = "";
 	this.foundPositions.clear ();
-}
+};
 
+//Copy results of a search in case of deletion of the last symbol
 Tree.prototype.cloneResults = function (set) {
     var clone = new Set ();
     for (var i of set) {
