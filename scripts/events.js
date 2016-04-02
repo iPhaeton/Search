@@ -31,7 +31,7 @@ function searchPanelFocus (event) {
 	if (findTarget(event.target, "close-button")) return;
 
 	var searchInput = document.getElementById("search-input");
-	if (tree.found && searchInput.value) tree.select(tree.foundPositions);
+	if (tree.foundPositions.size && searchInput.value) tree.select(tree.foundPositions);
 	else if (!tree.found && searchInput.value) {
 		tree.search (searchInput.value);
 		tree.select(tree.foundPositions);

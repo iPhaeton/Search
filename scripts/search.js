@@ -1,6 +1,6 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (parentElem, styles) {
+function Tree (parentElem, style) {
 	this.text = parentElem.textContent;
 
 	this.parentElem = parentElem;
@@ -8,13 +8,7 @@ function Tree (parentElem, styles) {
     this.measureWidths(this.text);
 
     //set style
-    if (styles) {
-        this.simpleStyle = styles.simpleStyle || "default-highlight";
-        this.complexStyle = styles.complexStyle;
-    }
-    else {
-        this.simpleStyle = "default-highlight";
-    };
+    this.style = style || "highlight-default";
 
     var current,
         previous,
@@ -61,7 +55,7 @@ function Tree (parentElem, styles) {
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
 	if (str === this.found) return true;
-	
+
 	this.found = str;
 	this.foundPositions.clear ();
 	
@@ -76,7 +70,10 @@ Tree.prototype.search = function (str) {
     var currentSymbol = this.found.charAt(0),
         nextSymbol = this.found.charAt(1),
         previousSymbol = currentSymbol;
-    if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return false;
+    if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) {
+        this.found = "";
+        return false;
+    };
     for (var index of this[currentSymbol].children[nextSymbol]) {
         this.foundPositions.add (index);
     };
@@ -85,7 +82,10 @@ Tree.prototype.search = function (str) {
     for (var i = 1; i < this.found.length - 1; i++) {
         currentSymbol = this.found.charAt(i),
         nextSymbol = this.found.charAt(i + 1);
-        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return false;
+        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) {
+            this.found = "";
+            return false;
+        };
 
         for (var index of this[currentSymbol].parents[previousSymbol]) {
             if (!this[currentSymbol].children[nextSymbol].has(index)) this.foundPositions.delete(index - i);
@@ -103,7 +103,10 @@ Tree.prototype.sequentialSearch = function (symbol) {
     this.found += symbol;
 
     //no such symbol
-    if (!this[symbol]) return false;
+    if (!this[symbol]) {
+        this.found = "";
+        return false;
+    };
 
     //first entered symbol
     if (!this.foundPositions.size) {
@@ -115,7 +118,10 @@ Tree.prototype.sequentialSearch = function (symbol) {
 
     //next symbols
     var previousSymbol = this.found.charAt(this.found.length - 2);
-    if (!this[symbol].parents[previousSymbol]) return false; //no connection to the previous entered symbol
+    if (!this[symbol].parents[previousSymbol]) {
+        this.found = "";
+        return false;
+    } //no connection to the previous entered symbol
 
     for (var index of this.foundPositions) {
         index += this.found.length - 1;
@@ -132,8 +138,8 @@ Tree.prototype.select = function (points) {
 		i = 0;
 
 	for (var startPoint of points) {
-		innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.simpleStyle + "' data-position='" + startPoint +
-            "' style='display: inline'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
+		innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.style + "' data-position='" + startPoint +
+            "' style='display: inline; position: absolute'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
 		i = startPoint;// + offset;
 	};
 	
@@ -142,35 +148,15 @@ Tree.prototype.select = function (points) {
 	this.parentElem.innerHTML = innerHTML;
     if (this.complexStyle) this.showSelection(this.foundPositions);
 
-    var d = document.createElement("div");
+    /*var d = document.createElement("div");
     d.textContent = innerHTML;
     d.style.border = "1px solid red";
-    document.body.appendChild(d);
+    document.body.appendChild(d);*/
 };
 
 //Deselect all
 Tree.prototype.deselectAll = function () {
 	this.parentElem.innerHTML = this.text;
-};
-
-Tree.prototype.showSelection = function (points) {
-    var offset = this.found.length,
-        innerHTML= this.text,
-        i = 0,
-        j = 0;
-
-    var highLights = this.parentElem.getElementsByClassName(this.simpleStyle);
-
-    for (var startPoint of points) {
-        innerHTML += "<div class='" + this.complexStyle + "' data-position='" + startPoint + "'" +
-            " style='display: inline; position: absolute; z-index: 100; top :" + highLights[j].offsetTop + "px; left: " + highLights[j].offsetLeft + "px;" +
-            " width: " + highLights[j].offsetWidth + "px; height: " + highLights[j++].offsetHeight + "px" +
-            "'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
-        i = startPoint + offset;
-    };
-
-    //innerHTML += this.text.slice (startPoint + offset);
-    this.parentElem.innerHTML = innerHTML;
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
