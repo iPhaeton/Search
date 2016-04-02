@@ -33,4 +33,6 @@ body {
 
 .highlight {
 	background-color: rgb(150, 255, 100);
+	display: inline;
+	box-sizing: border-box;
 }

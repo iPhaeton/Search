@@ -119,7 +119,7 @@ Tree.prototype.select = function (points) {
 		i = 0;
 		
 	for (var startPoint of points) {
-		innerHTML += this.text.slice (i, startPoint) + "<span class='highlight' data-position='" + startPoint + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+		innerHTML += this.text.slice (i, startPoint) + "<div class='highlight' data-position='" + startPoint + "'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
 		i = startPoint + offset;
 	};
 	

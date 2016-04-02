@@ -27,7 +27,7 @@ function documentClick (event) {
 };
 
 //select of search panel invoke
-function searchPanelFocus () {
+function searchPanelFocus (event) {
 	if (findTarget(event.target, "close-button")) return;
 
 	var searchInput = document.getElementById("search-input");
@@ -39,7 +39,7 @@ function searchPanelFocus () {
 };
 
 //search and select
-function searchInputInput () {
+function searchInputInput (event) {
 	if (this.value.slice(0, -1) === tree.found && this.value.length > 1) {
 		if (tree.sequentialSearch (this.value.slice(-1))) tree.select (tree.foundPositions);
 		else tree.deselectAll();
