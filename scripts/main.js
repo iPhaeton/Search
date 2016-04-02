@@ -13,7 +13,7 @@ var searchInput = document.getElementById ("search-input");
 searchInput.addEventListener("input", searchInputInput);
 
 var p = document.querySelector("p");
-var tree = new Tree(p, {complexStyle: "visible-highlight"});
+var tree = new Tree(p);
 
 //------------------------------------------------------------------------------------------------------
 /*
@@ -21,6 +21,7 @@ var tree = new Tree(p, {complexStyle: "visible-highlight"});
 5. Selection on different lines?
 6. Very long texts?
 7. Focus in Mozilla
+8. Text changes
 */
 
 /*

@@ -4,6 +4,8 @@ function Tree (parentElem, styles) {
 	this.text = parentElem.textContent;
 
 	this.parentElem = parentElem;
+    this.widths = {};
+    this.measureWidths(this.text);
 
     //set style
     if (styles) {
@@ -128,17 +130,22 @@ Tree.prototype.select = function (points) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0;
-		
+
 	for (var startPoint of points) {
 		innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.simpleStyle + "' data-position='" + startPoint +
             "' style='display: inline'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
-		i = startPoint + offset;
+		i = startPoint;// + offset;
 	};
 	
-	innerHTML += this.text.slice (startPoint + offset);
+	innerHTML += this.text.slice (startPoint);
 
 	this.parentElem.innerHTML = innerHTML;
     if (this.complexStyle) this.showSelection(this.foundPositions);
+
+    var d = document.createElement("div");
+    d.textContent = innerHTML;
+    d.style.border = "1px solid red";
+    document.body.appendChild(d);
 };
 
 //Deselect all
@@ -148,21 +155,21 @@ Tree.prototype.deselectAll = function () {
 
 Tree.prototype.showSelection = function (points) {
     var offset = this.found.length,
-        innerHTML = this.text,
+        innerHTML= this.text,
         i = 0,
         j = 0;
 
     var highLights = this.parentElem.getElementsByClassName(this.simpleStyle);
 
     for (var startPoint of points) {
-        innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.complexStyle + "' data-position='" + startPoint + "'" +
+        innerHTML += "<div class='" + this.complexStyle + "' data-position='" + startPoint + "'" +
             " style='display: inline; position: absolute; z-index: 100; top :" + highLights[j].offsetTop + "px; left: " + highLights[j].offsetLeft + "px;" +
             " width: " + highLights[j].offsetWidth + "px; height: " + highLights[j++].offsetHeight + "px" +
             "'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
         i = startPoint + offset;
     };
 
-    innerHTML += this.text.slice (startPoint + offset);
+    //innerHTML += this.text.slice (startPoint + offset);
     this.parentElem.innerHTML = innerHTML;
 };
 
@@ -181,4 +188,34 @@ Tree.prototype.cloneResults = function (set) {
         clone.add(i);
     };
     return clone;
+};
+
+Tree.prototype.measureWidths = function (text) {
+    //set a div
+    var divForMeasurement = document.createElement("div");
+    divForMeasurement.style.display = "inline-block";
+    document.body.appendChild(divForMeasurement);
+    divForMeasurement.textContent = "a";
+    this.etalon = divForMeasurement.clientWidth;
+
+    //measure width of every symbol
+    for  (var i = 0; i < text.length; i++) {
+        if (!this.widths[text[i]]) {
+            divForMeasurement.textContent = text[i];
+            this.widths[text[i]] = this.measureDiv(divForMeasurement);
+        };
+    };
+
+    //remove the div
+    document.body.removeChild(divForMeasurement);
+};
+
+Tree.prototype.measureDiv = function (div) {
+    if (!div.clientWidth) {
+        div.textContent = "a" + div.textContent + "a";
+        return div.clientWidth - 2*this.etalon;
+    }
+    else {
+        return div.clientWidth;
+    };
 };

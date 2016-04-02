@@ -12,6 +12,7 @@ body {
 	border:1px solid #aaa;
 	padding:5px;
 	box-sizing:border-box;
+	z-index: 101;
 }
 
 .close-button {
@@ -33,6 +34,10 @@ body {
 
 .default-highlight {
 	background-color: rgb(150, 255, 100);
+	padding-right: 0;
+	margin: 0;
+	position: absolute;
+	border: 1px solid red;
 }
 
 .visible-highlight {
