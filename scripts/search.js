@@ -136,14 +136,14 @@ Tree.prototype.select = function (points) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0;
-
+	
 	for (var startPoint of points) {
-		innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.style + "' data-position='" + startPoint +
-            "' style='display: inline; position: absolute'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
-		i = startPoint;// + offset;
+		innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.style + "' data-position='" + startPoint +
+            "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+		i = startPoint + offset;
 	};
 	
-	innerHTML += this.text.slice (startPoint);
+	innerHTML += this.text.slice (startPoint + offset);
 
 	this.parentElem.innerHTML = innerHTML;
     if (this.complexStyle) this.showSelection(this.foundPositions);
