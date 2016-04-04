@@ -136,14 +136,35 @@ Tree.prototype.select = function (points) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0;
+
+    //some idiotic misfunctioning of Chrome
+    if (~navigator.userAgent.indexOf("Chrome")) {
+        if (document.documentElement.clientWidth <
+            Math.max(document.body.scrollWidth, document.documentElement.scrollWidth,
+                document.body.offsetWidth, document.documentElement.offsetWidth,
+                document.body.clientWidth, document.documentElement.clientWidth)) {
+            var position = "static";
+            var posDependentOffset = offset;
+        }
+        else {
+            var position = "position: absolute";
+            var posDependentOffset = 0;
+        };
+    }
+    else {
+        var position = "static";
+        var posDependentOffset = offset;
+    };
+
+    //alert(position);
 	
 	for (var startPoint of points) {
 		innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.style + "' data-position='" + startPoint +
-            "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
-		i = startPoint + offset;
+            "' style='" + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+		i = startPoint + posDependentOffset;
 	};
 	
-	innerHTML += this.text.slice (startPoint + offset);
+	innerHTML += this.text.slice (startPoint + posDependentOffset);
 
 	this.parentElem.innerHTML = innerHTML;
     if (this.complexStyle) this.showSelection(this.foundPositions);
