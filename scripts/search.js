@@ -4,12 +4,13 @@ function Tree (parentElem, style) {
 	this.text = parentElem.textContent;
 
 	this.parentElem = parentElem;
-    this.widths = {};
-    this.measureWidths(this.text);
 
     //set style
     this.defStyle = style.default || "highlight-default";
 	this.cmplxStyle = style.complex;
+	
+	//set the marks
+	this.setMarks ();
 
     var current,
         previous,
@@ -49,12 +50,14 @@ function Tree (parentElem, style) {
 	
 	this.found = ""; //text which was found and selected, initially empty
 	this.foundPositions = new Set (); //positions of existing selections, initially empty
-    this.previousFoundPositions = new Set (); //result of the previous search
+    //this.previousFoundPositions = new Set (); //result of the previous search
 };
 
 //Search-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
+	//this.previousFoundPositions = new Set();
+	
 	if (str === this.found) return true;
 
 	this.found = str;
@@ -99,7 +102,7 @@ Tree.prototype.search = function (str) {
 };
 
 Tree.prototype.sequentialSearch = function (symbol) {
-    this.previousFoundPositions = this.cloneResults(this.foundPositions);
+    //this.previousFoundPositions = this.cloneResults(this.foundPositions);
 
     this.found += symbol;
 
@@ -157,6 +160,7 @@ Tree.prototype.select = function (points) {
         var posDependentOffset = offset;
     };
 	
+	//selection
 	for (var startPoint of points) {
 		innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
             "' style='" + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
@@ -204,11 +208,6 @@ Tree.prototype.deselectAll = function () {
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Clear the results of the last search
-Tree.prototype.clear = function () {
-	this.deselectAll ();
-	this.found = "";
-	this.foundPositions.clear ();
-};
 
 //Copy results of a search in case of deletion of the last symbol
 Tree.prototype.cloneResults = function (set) {
@@ -219,32 +218,25 @@ Tree.prototype.cloneResults = function (set) {
     return clone;
 };
 
-Tree.prototype.measureWidths = function (text) {
-    //set a div
-    var divForMeasurement = document.createElement("div");
-    divForMeasurement.style.display = "inline-block";
-    document.body.appendChild(divForMeasurement);
-    divForMeasurement.textContent = "a";
-    this.etalon = divForMeasurement.clientWidth;
-
-    //measure width of every symbol
-    for  (var i = 0; i < text.length; i++) {
-        if (!this.widths[text[i]]) {
-            divForMeasurement.textContent = text[i];
-            this.widths[text[i]] = this.measureDiv(divForMeasurement);
-        };
-    };
-
-    //remove the div
-    document.body.removeChild(divForMeasurement);
+Tree.prototype.measureSymbol = function () {
+	var div = document.createElement ("div");
+	div.style.position = "absolute";
+	
+	div.textContent = "i";
+	this.parentElem.appendChild(div);
+	var width1 = div.offsetWidth;
+	
+	div.textContent = "W";
+	var width2 = div.offsetWidth;
+	this.parentElem.removeChild(div);
+	
+	return {width: (width1 + width2) / 2, height: Math.max(div.offsetHeight + 1, this.parentElem.style.lineHeight)};
 };
 
-Tree.prototype.measureDiv = function (div) {
-    if (!div.clientWidth) {
-        div.textContent = "a" + div.textContent + "a";
-        return div.clientWidth - 2*this.etalon;
-    }
-    else {
-        return div.clientWidth;
-    };
+Tree.prototype.setMarks = function () {
+	var symbolMeasurements = this.measureSymbol (),
+		lineLength = symbolMeasurements.width * this.text.length;
+
+	alert(symbolMeasurements.width);
+	alert(symbolMeasurements.height);
 };
