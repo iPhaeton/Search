@@ -35,3 +35,12 @@ body {
 .highlight {
 	background-color: rgb(150, 255, 100);
 }
+
+.fancy-highlight {
+	background-color: rgb(150, 255, 100);
+	border: 1px dashed red;
+}
+
+p {
+	position:relative;
+}
