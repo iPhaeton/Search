@@ -8,7 +8,8 @@ function Tree (parentElem, style) {
     this.measureWidths(this.text);
 
     //set style
-    this.style = style || "highlight-default";
+    this.defStyle = style.default || "highlight-default";
+	this.cmplxStyle = style.complex;
 
     var current,
         previous,
@@ -137,7 +138,7 @@ Tree.prototype.select = function (points) {
 		innerHTML = "",
 		i = 0;
 
-    //some idiotic misfunctioning of Chrome
+    //some idiotic malfunctioning of Chrome
     if (~navigator.userAgent.indexOf("Chrome")) {
         if (document.documentElement.clientWidth <
             Math.max(document.body.scrollWidth, document.documentElement.scrollWidth,
@@ -155,11 +156,9 @@ Tree.prototype.select = function (points) {
         var position = "static";
         var posDependentOffset = offset;
     };
-
-    //alert(position);
 	
 	for (var startPoint of points) {
-		innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.style + "' data-position='" + startPoint +
+		innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
             "' style='" + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
 		i = startPoint + posDependentOffset;
 	};
@@ -167,12 +166,35 @@ Tree.prototype.select = function (points) {
 	innerHTML += this.text.slice (startPoint + posDependentOffset);
 
 	this.parentElem.innerHTML = innerHTML;
-    if (this.complexStyle) this.showSelection(this.foundPositions);
+	//show complex style
+    if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
 
     /*var d = document.createElement("div");
     d.textContent = innerHTML;
     d.style.border = "1px solid red";
     document.body.appendChild(d);*/
+};
+
+//Add divs to show complex style
+Tree.prototype.showComplexStyle = function () {
+	var spans = this.parentElem.getElementsByClassName (this.defStyle);
+		innerHTML = "",
+		parentCoodrs = this.parentElem.getBoundingClientRect();
+		
+	//check borders
+	spans[0].classList.add (this.cmplxStyle);
+	var style = getComputedStyle(spans[0]),
+		leftOffset = parseInt(style.paddingLeft) + parseInt(style.marginLeft) + parseInt(style.borderLeftWidth);
+		topOffset = parseInt(style.paddingTop) + parseInt(style.marginTop) + parseInt(style.borderTopWidth);
+	spans[0].classList.remove (this.cmplxStyle);
+	
+	for (var i = 0; i < spans.length; i++) {
+		var coords = spans[i].getBoundingClientRect();
+		innerHTML += "<div class='" + this.cmplxStyle + "' style='white-space:pre; position:absolute; top:" + (coords.top - parentCoodrs.top - topOffset) + "px; left:" + 
+		(coords.left + window.pageXOffset - leftOffset) + "px'>" + spans[i].textContent + "</div>";
+	};
+	
+	return innerHTML;
 };
 
 //Deselect all

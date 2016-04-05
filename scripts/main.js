@@ -13,15 +13,12 @@ var searchInput = document.getElementById ("search-input");
 searchInput.addEventListener("input", searchInputInput);
 
 var p = document.querySelector("p");
-var tree = new Tree(p, "highlight");
+var tree = new Tree(p, {default: "highlight", complex: "fancy-highlight"});
 
 //------------------------------------------------------------------------------------------------------
 /*
-4. Long strings
 5. Selection on different lines?
-6. Very long texts?
-7. Focus in Mozilla
-8. Text changes
+9. Spaces
 */
 
 /*
