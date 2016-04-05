@@ -228,15 +228,24 @@ Tree.prototype.measureSymbol = function () {
 	
 	div.textContent = "W";
 	var width2 = div.offsetWidth;
+    var height = Math.max(div.offsetHeight + 1, this.parentElem.style.lineHeight)
 	this.parentElem.removeChild(div);
 	
-	return {width: (width1 + width2) / 2, height: Math.max(div.offsetHeight + 1, this.parentElem.style.lineHeight)};
+	return {width: (width1 + width2) / 2, height: height};
 };
 
 Tree.prototype.setMarks = function () {
 	var symbolMeasurements = this.measureSymbol (),
-		lineLength = symbolMeasurements.width * this.text.length;
+        screenWidth = document.documentElement.clientWidth,
+        screenHeight = document.documentElement.clientHeight,
+        columnsOnScreen = 2 * Math.round(screenWidth/symbolMeasurements.width),
+        linesOnScreen = 2 * Math.round(screenHeight/symbolMeasurements.height),
+        scrollWidth = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth,
+                               document.body.offsetWidth, document.documentElement.offsetWidth,
+                               document.body.clientWidth, document.documentElement.clientWidth),
+        leftTopSymbol = Math.round(window.pageYOffset/symbolMeasurements.height) *
+                        Math.round(scrollWidth/symbolMeasurements.width) +
+                        Math.round(window.pageXOffset/symbolMeasurements.width);
 
-	alert(symbolMeasurements.width);
-	alert(symbolMeasurements.height);
+    alert(leftTopSymbol);
 };
