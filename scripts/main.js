@@ -18,7 +18,7 @@ var searchInput = document.getElementById ("search-input");
 searchInput.addEventListener("input", searchInputInput);
 
 var p = document.querySelector("p");
-var tree = new Tree(p, {default: "highlight", complex: "fancy-highlight"});
+var tree = new Tree(p, {default: "highlight"/*, complex: "fancy-highlight"*/});
 
 //------------------------------------------------------------------------------------------------------
 /*

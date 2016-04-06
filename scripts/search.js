@@ -181,7 +181,7 @@ Tree.prototype.select = function (points) {
 		return;
 	};
 
-	innerHTML += this.text.slice (i - posDependentOffset + 1);
+	innerHTML += this.text.slice (i);
 
 	this.parentElem.innerHTML = innerHTML;
 	//show complex style
