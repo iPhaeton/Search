@@ -139,7 +139,8 @@ Tree.prototype.sequentialSearch = function (symbol) {
 Tree.prototype.select = function (points) {
 	var offset = this.found.length,
 		innerHTML = "",
-		i = 0;
+		i = 0,
+		selected = false;;
 
     //some idiotic malfunctioning of Chrome
     if (~navigator.userAgent.indexOf("Chrome")) {
@@ -161,13 +162,26 @@ Tree.prototype.select = function (points) {
     };
 	
 	//selection
-	for (var startPoint of points) {
-		innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-            "' style='" + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
-		i = startPoint + posDependentOffset;
+	this.setMarks();
+	for (var j = 0; j < this.startMarks.length; j++) {
+		for (var k = this.startMarks[j]; k < this.endMarks[j]; k++) {
+			if (points.has (k)) var startPoint = k;
+			else continue;
+							
+			innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
+				"' style='" + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+			i = startPoint + posDependentOffset;
+			selected = true;
+		};
 	};
 	
-	innerHTML += this.text.slice (startPoint + posDependentOffset);
+	//if selected text is not on the screen
+	if  (!selected) {
+		this.deselectAll ();
+		return;
+	};
+
+	innerHTML += this.text.slice (i - posDependentOffset + 1);
 
 	this.parentElem.innerHTML = innerHTML;
 	//show complex style
@@ -219,33 +233,49 @@ Tree.prototype.cloneResults = function (set) {
 };
 
 Tree.prototype.measureSymbol = function () {
+	//height
 	var div = document.createElement ("div");
 	div.style.position = "absolute";
-	
-	div.textContent = "i";
-	this.parentElem.appendChild(div);
-	var width1 = div.offsetWidth;
-	
 	div.textContent = "W";
-	var width2 = div.offsetWidth;
-    var height = Math.max(div.offsetHeight + 1, this.parentElem.style.lineHeight)
+	this.parentElem.appendChild(div);
+	
+	var height = Math.max(div.offsetHeight + 1, this.parentElem.style.lineHeight);
 	this.parentElem.removeChild(div);
 	
-	return {width: (width1 + width2) / 2, height: height};
+	//width
+	var scrollHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight,
+                                document.body.offsetHeight, document.documentElement.offsetHeight,
+                                document.body.clientHeight, document.documentElement.clientHeight);
+	
+	var lineLength = scrollHeight/height * document.documentElement.clientWidth;
+	var width = lineLength/this.text.length;
+	
+	return ({width: width, height: height});
 };
 
 Tree.prototype.setMarks = function () {
 	var symbolMeasurements = this.measureSymbol (),
         screenWidth = document.documentElement.clientWidth,
         screenHeight = document.documentElement.clientHeight,
-        columnsOnScreen = 2 * Math.round(screenWidth/symbolMeasurements.width),
-        linesOnScreen = 2 * Math.round(screenHeight/symbolMeasurements.height),
+        columnsOnScreen = Math.round(screenWidth/symbolMeasurements.width),
+        linesOnScreen = Math.round(screenHeight/symbolMeasurements.height),
         scrollWidth = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth,
                                document.body.offsetWidth, document.documentElement.offsetWidth,
                                document.body.clientWidth, document.documentElement.clientWidth),
         leftTopSymbol = Math.round(window.pageYOffset/symbolMeasurements.height) *
                         Math.round(scrollWidth/symbolMeasurements.width) +
                         Math.round(window.pageXOffset/symbolMeasurements.width);
-
-    alert(leftTopSymbol);
+						
+	this.startMarks = {};
+	this.endMarks = {};
+	
+	for (var i = 0; i < linesOnScreen + 10; i++) {
+		this.startMarks[i] = ((Math.round(window.pageYOffset/symbolMeasurements.height) - 10 + i) *
+						   Math.round(scrollWidth/symbolMeasurements.width) +
+						   Math.round(window.pageXOffset/symbolMeasurements.width));
+		this.endMarks[i] = (this.startMarks[i] + columnsOnScreen);
+	};
+	
+	this.startMarks.length = i;
+	this.endMarks.length = i;
 };

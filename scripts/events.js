@@ -55,6 +55,30 @@ function searchInputInput (event) {
 	};
 };
 
+
+//selection of only visible text
+function documentScroll () {
+	/*if (!tree) return;
+		
+	clearTimeout (scrollTimeOut);
+	if (tree.cmplxStyle) var time = 200;
+	else time = 50;
+			
+	scrollTimeOut = setTimeout (function () {
+		if (tree.foundPositions.size) tree.select (tree.foundPositions);
+	}, time);*/
+	scrolled = true;
+};
+
+setInterval (function () {
+	if (scrolled) {
+		scrollTimeOut = setTimeout (function () {
+			if (tree.foundPositions.size) tree.select (tree.foundPositions);
+		}, 0);
+		scrolled = false;
+	}
+}, 200);
+
 //---------------------------------------------------------------------------------------------------------------------------------------
 function showSearchPanel () {
 	var searchPanel = document.getElementById ("search-panel");
