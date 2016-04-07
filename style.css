@@ -18,7 +18,6 @@ body {
 .close-button {
 	width:20px;
 	height:20px;
-	/*background-color:#aaa;*/
 	float:right;
 	background:url(images/gtk-close.png);
 	background-size:cover;

@@ -57,7 +57,7 @@ function Tree (parentElem, style) {
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
 	//this.previousFoundPositions = new Set();
-	
+
 	if (str === this.found) return true;
 
 	this.found = str;
@@ -279,3 +279,5 @@ Tree.prototype.setMarks = function () {
 	this.startMarks.length = i;
 	this.endMarks.length = i;
 };
+
+//------------------------------------------------------------------------------------------------------------------

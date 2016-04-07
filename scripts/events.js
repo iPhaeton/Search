@@ -1,6 +1,6 @@
 //invoke search panel
 function documentKeyDown (event) {
-	if (event.ctrlKey && event.keyCode === 70) {
+	if ((event.ctrlKey && event.keyCode === 70) || (event.keyCode === 27 && !searchPanel.hidden)) {
 		showSearchPanel ();
 		event.preventDefault ();
 	};
@@ -22,8 +22,6 @@ function documentClick (event) {
 	}
 	
 	if (findTarget (event.target, "search-panel")) return;
-	
-	tree.deselectAll ();
 };
 
 //select of search panel invoke
@@ -31,11 +29,14 @@ function searchPanelFocus (event) {
 	if (findTarget(event.target, "close-button")) return;
 
 	var searchInput = document.getElementById("search-input");
-	if (tree.foundPositions.size && searchInput.value) tree.select(tree.foundPositions);
+	searchInput.focus();
+
+	if (tree.foundPositions.size && searchInput.value)
+		tree.select(tree.foundPositions);
 	else if (!tree.found && searchInput.value) {
 		tree.search (searchInput.value);
 		tree.select(tree.foundPositions);
-	}
+	};
 };
 
 //search and select
@@ -58,15 +59,6 @@ function searchInputInput (event) {
 
 //selection of only visible text
 function documentScroll () {
-	/*if (!tree) return;
-		
-	clearTimeout (scrollTimeOut);
-	if (tree.cmplxStyle) var time = 200;
-	else time = 50;
-			
-	scrollTimeOut = setTimeout (function () {
-		if (tree.foundPositions.size) tree.select (tree.foundPositions);
-	}, time);*/
 	scrolled = true;
 };
 
@@ -105,6 +97,7 @@ function showSearchPanel () {
 		//remove the fake div
 		var fakePanel = document.getElementById ("fake-panel");
 		document.body.removeChild (fakePanel);
+		tree.deselectAll();
 	};
 };
 

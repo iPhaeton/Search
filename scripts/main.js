@@ -24,6 +24,8 @@ var tree = new Tree(p, {default: "highlight"/*, complex: "fancy-highlight"*/});
 /*
 5. Selection on different lines?
 9. Spaces
+10. Reload on Enter
+11. Mozilla doesn't select on the second time
 */
 
 /*
