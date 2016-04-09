@@ -49,7 +49,7 @@ function Tree (parentElem, style) {
     };
 	
 	this.found = ""; //text which was found and selected, initially empty
-	this.foundPositions = new Set (); //positions of existing selections, initially empty
+    this.foundPositions = new SearchResults (); //positions of existing selections, initially empty
 };
 
 //Search-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ Tree.prototype.search = function (str) {
 	if (str === this.found) return true;
 
 	this.found = str;
-	this.foundPositions.clear ();
+    this.foundPositions = new SearchResults ();
 	
     if (this.found.length === 1) {
 		for (var index of this[this.found].indecies) {
@@ -89,7 +89,9 @@ Tree.prototype.search = function (str) {
         };
 
         for (var index of this[currentSymbol].parents[previousSymbol]) {
-            if (!this[currentSymbol].children[nextSymbol].has(index)) this.foundPositions.delete(index - i);
+            if (!this[currentSymbol].children[nextSymbol].has(index))
+                if (this.foundPositions.has (index - i))
+                    this.foundPositions.delete(index - i);
         };
 
         previousSymbol = currentSymbol;
@@ -99,8 +101,6 @@ Tree.prototype.search = function (str) {
 };
 
 Tree.prototype.sequentialSearch = function (symbol) {
-    //this.previousFoundPositions = this.cloneResults(this.foundPositions);
-
     this.found += symbol;
 
     //no such symbol
@@ -124,8 +124,9 @@ Tree.prototype.sequentialSearch = function (symbol) {
         return false;
     } //no connection to the previous entered symbol
 
-    for (var index of this.foundPositions) {
-        index += this.found.length - 1;
+    for (var index in this.foundPositions) {
+        if (!this.foundPositions.hasOwnProperty(index)) continue;
+        index = +index + this.found.length - 1;
         if (!this[symbol].parents[previousSymbol].has(index)) this.foundPositions.delete (index - this.found.length + 1);
     };
     return true;
@@ -145,7 +146,7 @@ Tree.prototype.select = function (points) {
             Math.max(document.body.scrollWidth, document.documentElement.scrollWidth,
                 document.body.offsetWidth, document.documentElement.offsetWidth,
                 document.body.clientWidth, document.documentElement.clientWidth)) {
-            var position = "static";
+            var position = "position: static";
             var posDependentOffset = offset;
         }
         else {
@@ -154,7 +155,7 @@ Tree.prototype.select = function (points) {
         };
     }
     else {
-        var position = "static";
+        var position = "position: static";
         var posDependentOffset = offset;
     };
 	
@@ -166,7 +167,7 @@ Tree.prototype.select = function (points) {
 			else continue;
 							
 			innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-				"' style='" + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+				"' style='white-space: pre; " + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
 			i = startPoint + posDependentOffset;
 			selected = true;
 		};
@@ -278,3 +279,32 @@ Tree.prototype.setMarks = function () {
 };
 
 //------------------------------------------------------------------------------------------------------------------
+
+function SearchResults () {
+    Object.defineProperty(this, "size", {enumrable: true, writable: true, value: 0});
+    Object.defineProperty(this, "_previous", {enumrable: true, writable: true, value: undefined});
+};
+
+SearchResults.prototype.add = function (item) {
+    if (this._previous) {
+        this[item] = {prev: this._previous, next: null};
+        this[this._previous].next = item;
+    }
+    else this[item] = {prev: null, next: null};
+
+    this._previous = item;
+    this.size++;
+}
+
+SearchResults.prototype.delete = function (item) {
+    if (this[item].prev) this[this[item].prev].next = this[item].next;
+    if (this[item].next) this[this[item].next].prev = this[item].prev;
+
+    delete this[item];
+    this.size--;
+};
+
+SearchResults.prototype.has = function (item) {
+    if (this[item]) return true;
+    else return false;
+};

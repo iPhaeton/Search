@@ -59,11 +59,11 @@ function searchInputInput (event) {
 
 //selection of only visible text
 function documentScroll () {
-	scrolled = true;
+	if (!searchPanel.hidden && searchInput.value) scrolled = true;
 };
 
 setInterval (function () {
-	if (scrolled && !searchPanel.hidden) {
+	if (scrolled) {
 		scrollTimeOut = setTimeout (function () {
 			if (tree.foundPositions.size) tree.select (tree.foundPositions);
 		}, 0);
