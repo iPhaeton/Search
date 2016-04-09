@@ -50,14 +50,11 @@ function Tree (parentElem, style) {
 	
 	this.found = ""; //text which was found and selected, initially empty
 	this.foundPositions = new Set (); //positions of existing selections, initially empty
-    //this.previousFoundPositions = new Set (); //result of the previous search
 };
 
 //Search-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
-	//this.previousFoundPositions = new Set();
-
 	if (str === this.found) return true;
 
 	this.found = str;

@@ -63,7 +63,7 @@ function documentScroll () {
 };
 
 setInterval (function () {
-	if (scrolled) {
+	if (scrolled && !searchPanel.hidden) {
 		scrollTimeOut = setTimeout (function () {
 			if (tree.foundPositions.size) tree.select (tree.foundPositions);
 		}, 0);
