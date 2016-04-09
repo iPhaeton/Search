@@ -43,7 +43,7 @@ function searchPanelFocus (event) {
 function searchInputInput (event) {
 	if (this.value.slice(0, -1) === tree.found && this.value.length > 1) {
 		if (tree.foundPositions.size) {
-			if (tree.sequentialSearch (this.value.slice(-1))) tree.select (tree.foundPositions);
+			if (tree.search (this.value)) tree.select (tree.foundPositions);
 			else tree.deselectAll();
 		};
 	}

@@ -41,5 +41,6 @@ body {
 }
 
 p {
-	position:relative;
+	position: relative;
+	white-space: pre-wrap;
 }

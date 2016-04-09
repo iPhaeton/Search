@@ -2,8 +2,10 @@
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
 function Tree (parentElem, style) {
 	this.text = parentElem.textContent;
-
 	this.parentElem = parentElem;
+
+    this.markLines();
+    if (getComputedStyle(this.parentElem).whiteSpace === "pre-wrap") this.lines.measureLines();
 
     //set style
     this.defStyle = style.default || "highlight-default";
@@ -100,65 +102,14 @@ Tree.prototype.search = function (str) {
     return true;
 };
 
-Tree.prototype.sequentialSearch = function (symbol) {
-    this.found += symbol;
-
-    //no such symbol
-    if (!this[symbol]) {
-        this.found = "";
-        return false;
-    };
-
-    //first entered symbol
-    if (!this.foundPositions.size) {
-        for (var index of this[symbol].indecies) {
-            this.foundPositions.add(index);
-        };
-        return true;
-    };
-
-    //next symbols
-    var previousSymbol = this.found.charAt(this.found.length - 2);
-    if (!this[symbol].parents[previousSymbol]) {
-        this.found = "";
-        return false;
-    } //no connection to the previous entered symbol
-
-    for (var index in this.foundPositions) {
-        if (!this.foundPositions.hasOwnProperty(index)) continue;
-        index = +index + this.found.length - 1;
-        if (!this[symbol].parents[previousSymbol].has(index)) this.foundPositions.delete (index - this.found.length + 1);
-    };
-    return true;
-};
-
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Selection of found matches after search
 Tree.prototype.select = function (points) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0,
-		selected = false;;
+		selected = false;
 
-    //some idiotic malfunctioning of Chrome
-    if (~navigator.userAgent.indexOf("Chrome")) {
-        if (document.documentElement.clientWidth <
-            Math.max(document.body.scrollWidth, document.documentElement.scrollWidth,
-                document.body.offsetWidth, document.documentElement.offsetWidth,
-                document.body.clientWidth, document.documentElement.clientWidth)) {
-            var position = "position: static";
-            var posDependentOffset = offset;
-        }
-        else {
-            var position = "position: absolute";
-            var posDependentOffset = 0;
-        };
-    }
-    else {
-        var position = "position: static";
-        var posDependentOffset = offset;
-    };
-	
 	//selection
 	this.setMarks();
 	for (var j = 0; j < this.startMarks.length; j++) {
@@ -167,13 +118,13 @@ Tree.prototype.select = function (points) {
 			else continue;
 							
 			innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-				"' style='white-space: pre; " + position + "'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
-			i = startPoint + posDependentOffset;
+				"' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+			i = startPoint + offset;
 			selected = true;
 		};
 	};
 	
-	//if selected text is not on the screen
+	//if found text is not on the screen
 	if  (!selected) {
 		this.deselectAll ();
 		return;
@@ -219,17 +170,18 @@ Tree.prototype.deselectAll = function () {
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//Clear the results of the last search
+Tree.prototype.markLines = function () {
+    this.lines = new Lines(this);
+    this.lines.add (0);
 
-//Copy results of a search in case of deletion of the last symbol
-Tree.prototype.cloneResults = function (set) {
-    var clone = new Set ();
-    for (var i of set) {
-        clone.add(i);
+    for (var i = 0; i < this.text.length; i++) {
+        if (this.text[i] === "\n") {
+            this.lines.add(i + 1);
+        };
     };
-    return clone;
 };
 
+//?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 Tree.prototype.measureSymbol = function () {
 	//height
 	var div = document.createElement ("div");
@@ -276,35 +228,4 @@ Tree.prototype.setMarks = function () {
 	
 	this.startMarks.length = i;
 	this.endMarks.length = i;
-};
-
-//------------------------------------------------------------------------------------------------------------------
-
-function SearchResults () {
-    Object.defineProperty(this, "size", {enumrable: true, writable: true, value: 0});
-    Object.defineProperty(this, "_previous", {enumrable: true, writable: true, value: undefined});
-};
-
-SearchResults.prototype.add = function (item) {
-    if (this._previous) {
-        this[item] = {prev: this._previous, next: null};
-        this[this._previous].next = item;
-    }
-    else this[item] = {prev: null, next: null};
-
-    this._previous = item;
-    this.size++;
-}
-
-SearchResults.prototype.delete = function (item) {
-    if (this[item].prev) this[this[item].prev].next = this[item].next;
-    if (this[item].next) this[this[item].next].prev = this[item].prev;
-
-    delete this[item];
-    this.size--;
-};
-
-SearchResults.prototype.has = function (item) {
-    if (this[item]) return true;
-    else return false;
 };
