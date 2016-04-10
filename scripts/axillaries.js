@@ -20,6 +20,7 @@ Arr.prototype.delete = function (index) {
 function Lines (tree) {
     Arr.apply (this, arguments);
     Object.defineProperty(this, "tree", {enumrable: false, value: tree});
+    Object.defineProperty(this, "quantity", {enumrable: false, value: 0, writable: true}); //amount of found matches
 };
 
 Lines.prototype = Object.create(Arr.prototype);
@@ -76,6 +77,7 @@ Lines.prototype.clearResults = function () {
     for (var i = 0; i < this.size; i++) {
         this[i].foundPositions = new SearchResults ();
     };
+    this.quantity = 0;
 };
 
 Lines.prototype.setResults = function (points) {
@@ -89,6 +91,7 @@ Lines.prototype.setResults = function (points) {
             //write down the found index to the appropriate line
             if (index < nextIndex) {
                 this[j].foundPositions.add (index);
+                this.quantity++;
                 break;
             }
             else j++;
@@ -107,6 +110,7 @@ Lines.prototype.deleteResult = function* () {
 
         if (nextToDelete < nextIndex) {
             if (this[j].foundPositions.has(nextToDelete)) this[j].foundPositions.delete(nextToDelete);
+            this.quantity--;
             nextToDelete = yield;
         }
         else j++;

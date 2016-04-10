@@ -20,6 +20,8 @@ searchInput.addEventListener("input", searchInputInput);
 var p = document.querySelector("p");
 var tree = new Tree(p, {default: "highlight"/*, complex: "fancy-highlight"*/});
 
+var indicator = document.getElementById("indicator");
+
 //------------------------------------------------------------------------------------------------------
 /*
 5. Selection on different lines?

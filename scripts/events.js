@@ -54,6 +54,8 @@ function searchInputInput (event) {
 		if (tree.search (this.value)) tree.select ();
 		else tree.deselectAll();
 	};
+
+    showQuantity();
 };
 
 
@@ -120,4 +122,10 @@ function findTarget (target, marker) {
 		if (target.classList.contains (marker) || target.id === marker) return target;
 		target = target.parentElement;
 	};
+};
+
+//Show amount of found matches
+function showQuantity () {
+    if (searchInput.value) indicator.textContent = tree.lines.quantity;
+    else indicator.textContent = "";
 };

@@ -143,6 +143,7 @@ Tree.prototype.select = function () {
 	innerHTML += this.text.slice (i);
 
 	this.parentElem.innerHTML = innerHTML;
+
 	//show complex style
     if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
 
