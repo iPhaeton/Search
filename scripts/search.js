@@ -60,12 +60,14 @@ Tree.prototype.search = function (str) {
 	if (str === this.found) return true;
 
 	this.found = str;
-    this.foundPositions = new SearchResults ();
-	
+    //this.foundPositions = new SearchResults ();
+
+	var j = 0;
     if (this.found.length === 1) {
-		for (var index of this[this.found].indecies) {
+		this.lines.setResults(this[this.found].indecies);
+		/*for (var index of this[this.found].indecies) {
 			this.foundPositions.add (index);
-		};
+		};*/
 		return true;
 	};
 
@@ -77,9 +79,10 @@ Tree.prototype.search = function (str) {
         this.found = "";
         return false;
     };
-    for (var index of this[currentSymbol].children[nextSymbol]) {
+	this.lines.setResults(this[currentSymbol].children[nextSymbol]);
+    /*for (var index of this[currentSymbol].children[nextSymbol]) {
         this.foundPositions.add (index);
-    };
+    };*/
 
 	//go from parent to child, if there is no next child, delete the corresponding property from result
     for (var i = 1; i < this.found.length - 1; i++) {
@@ -90,10 +93,14 @@ Tree.prototype.search = function (str) {
             return false;
         };
 
+		var gen = this.lines.deleteResult();
+		gen.next();
         for (var index of this[currentSymbol].parents[previousSymbol]) {
             if (!this[currentSymbol].children[nextSymbol].has(index))
-                if (this.foundPositions.has (index - i))
-                    this.foundPositions.delete(index - i);
+				gen.next(index - i);
+
+                /*if (this.foundPositions.has (index - i))
+                    this.foundPositions.delete(index - i);*/
         };
 
         previousSymbol = currentSymbol;
