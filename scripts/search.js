@@ -5,7 +5,7 @@ function Tree (parentElem, style) {
 	this.parentElem = parentElem;
 
     this.markLines();
-    if (getComputedStyle(this.parentElem).whiteSpace === "pre-wrap") this.lines.measureLines();
+    this.lines.measureLines();
 
     //set style
     this.defStyle = style.default || "highlight-default";
@@ -111,6 +111,8 @@ Tree.prototype.select = function (points) {
 		selected = false;
 
 	//selection
+
+
 	this.setMarks();
 	for (var j = 0; j < this.startMarks.length; j++) {
 		for (var k = this.startMarks[j]; k < this.endMarks[j]; k++) {
