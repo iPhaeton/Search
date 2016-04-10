@@ -10,9 +10,6 @@ function Tree (parentElem, style) {
     //set style
     this.defStyle = style.default || "highlight-default";
 	this.cmplxStyle = style.complex;
-	
-	//set the marks
-	this.setMarks ();
 
     var current,
         previous,
@@ -57,17 +54,17 @@ function Tree (parentElem, style) {
 //Search-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
+	var timeStart = performance.now();
+
 	if (str === this.found) return true;
 
 	this.found = str;
-    //this.foundPositions = new SearchResults ();
+    this.lines.clearResults();
 
 	var j = 0;
     if (this.found.length === 1) {
 		this.lines.setResults(this[this.found].indecies);
-		/*for (var index of this[this.found].indecies) {
-			this.foundPositions.add (index);
-		};*/
+		//alert(performance.now() - timeStart);
 		return true;
 	};
 
@@ -80,9 +77,6 @@ Tree.prototype.search = function (str) {
         return false;
     };
 	this.lines.setResults(this[currentSymbol].children[nextSymbol]);
-    /*for (var index of this[currentSymbol].children[nextSymbol]) {
-        this.foundPositions.add (index);
-    };*/
 
 	//go from parent to child, if there is no next child, delete the corresponding property from result
     for (var i = 1; i < this.found.length - 1; i++) {
@@ -98,41 +92,48 @@ Tree.prototype.search = function (str) {
         for (var index of this[currentSymbol].parents[previousSymbol]) {
             if (!this[currentSymbol].children[nextSymbol].has(index))
 				gen.next(index - i);
-
-                /*if (this.foundPositions.has (index - i))
-                    this.foundPositions.delete(index - i);*/
         };
 
         previousSymbol = currentSymbol;
     };
 
+	//alert(performance.now() - timeStart);
     return true;
 };
 
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Selection of found matches after search
-Tree.prototype.select = function (points) {
+Tree.prototype.select = function () {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0,
 		selected = false;
 
 	//selection
+	for (var j = 0; j < this.lines.size; j++) {
+		//check, if the line is on screen
+		if (this.lines[j].computedTop < window.pageYOffset - 0.5*document.documentElement.clientHeight) continue;
 
+		for (var startPoint in this.lines[j].foundPositions) {
+			if (!this.lines[j].foundPositions.hasOwnProperty(startPoint)) continue;
+			else startPoint = +startPoint;
 
-	this.setMarks();
-	for (var j = 0; j < this.startMarks.length; j++) {
-		for (var k = this.startMarks[j]; k < this.endMarks[j]; k++) {
-			if (points.has (k)) var startPoint = k;
-			else continue;
-							
+			//check, if the symbol is visible
+			if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width < window.pageXOffset - document.documentElement.clientWidth) continue;
+
 			innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-				"' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+					"' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
 			i = startPoint + offset;
 			selected = true;
+
+			//check, if the symbol is visible
+			if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width > window.pageXOffset + 3*document.documentElement.clientWidth) break; //3 screens, because a symbol width is very approximate
 		};
+
+		//check, if the line is on screen
+		if (this.lines[j].computedTop > window.pageYOffset + 1.5*document.documentElement.clientHeight) break;
 	};
-	
+
 	//if found text is not on the screen
 	if  (!selected) {
 		this.deselectAll ();
@@ -188,53 +189,4 @@ Tree.prototype.markLines = function () {
             this.lines.add(i + 1);
         };
     };
-};
-
-//?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-Tree.prototype.measureSymbol = function () {
-	//height
-	var div = document.createElement ("div");
-	div.style.position = "absolute";
-	div.textContent = "W";
-	this.parentElem.appendChild(div);
-	
-	var height = Math.max(div.offsetHeight + 1, this.parentElem.style.lineHeight);
-	this.parentElem.removeChild(div);
-	
-	//width
-	var scrollHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight,
-                                document.body.offsetHeight, document.documentElement.offsetHeight,
-                                document.body.clientHeight, document.documentElement.clientHeight);
-	
-	var lineLength = scrollHeight/height * document.documentElement.clientWidth;
-	var width = lineLength/this.text.length;
-	
-	return ({width: width, height: height});
-};
-
-Tree.prototype.setMarks = function () {
-	var symbolMeasurements = this.measureSymbol (),
-        screenWidth = document.documentElement.clientWidth,
-        screenHeight = document.documentElement.clientHeight,
-        columnsOnScreen = Math.round(screenWidth/symbolMeasurements.width),
-        linesOnScreen = Math.round(screenHeight/symbolMeasurements.height),
-        scrollWidth = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth,
-                               document.body.offsetWidth, document.documentElement.offsetWidth,
-                               document.body.clientWidth, document.documentElement.clientWidth),
-        leftTopSymbol = Math.round(window.pageYOffset/symbolMeasurements.height) *
-                        Math.round(scrollWidth/symbolMeasurements.width) +
-                        Math.round(window.pageXOffset/symbolMeasurements.width);
-						
-	this.startMarks = {};
-	this.endMarks = {};
-	
-	for (var i = 0; i < linesOnScreen + 10; i++) {
-		this.startMarks[i] = ((Math.round(window.pageYOffset/symbolMeasurements.height) - 10 + i) *
-						   Math.round(scrollWidth/symbolMeasurements.width) +
-						   Math.round(window.pageXOffset/symbolMeasurements.width));
-		this.endMarks[i] = (this.startMarks[i] + columnsOnScreen);
-	};
-	
-	this.startMarks.length = i;
-	this.endMarks.length = i;
 };

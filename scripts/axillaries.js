@@ -69,7 +69,7 @@ Lines.prototype.measureLines = function () {
     this.symbolMeasurements = {width: (width1 + width2)/2, height: Math.max(div.offsetHeight, this.tree.parentElem.style.lineHeight)};
     this.tree.parentElem.removeChild(div);
 
-    alert(this.symbolMeasurements.width + "; " + this.symbolMeasurements.height);
+    //alert(this.symbolMeasurements.width + "; " + this.symbolMeasurements.height);
 };
 
 Lines.prototype.clearResults = function () {

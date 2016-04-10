@@ -31,27 +31,27 @@ function searchPanelFocus (event) {
 	var searchInput = document.getElementById("search-input");
 	searchInput.focus();
 
-	if (tree.foundPositions.size && searchInput.value)
-		tree.select(tree.foundPositions);
+	if (tree.found && searchInput.value)
+		tree.select();
 	else if (!tree.found && searchInput.value) {
 		tree.search (searchInput.value);
-		tree.select(tree.foundPositions);
+		tree.select();
 	};
 };
 
 //search and select
 function searchInputInput (event) {
 	if (this.value.slice(0, -1) === tree.found && this.value.length > 1) {
-		if (tree.foundPositions.size) {
-			if (tree.search (this.value)) tree.select (tree.foundPositions);
+		//if (tree.foundPositions.size) {
+			if (tree.search (this.value)) tree.select ();
 			else tree.deselectAll();
-		};
+		//};
 	}
 	else if (this.value.length === 0) {
 		tree.deselectAll ();
 	}
 	else {
-		if (tree.search (this.value)) tree.select (tree.foundPositions);
+		if (tree.search (this.value)) tree.select ();
 		else tree.deselectAll();
 	};
 };
@@ -65,7 +65,7 @@ function documentScroll () {
 setInterval (function () {
 	if (scrolled) {
 		scrollTimeOut = setTimeout (function () {
-			if (tree.foundPositions.size) tree.select (tree.foundPositions);
+			if (tree.found) tree.select ();
 		}, 0);
 		scrolled = false;
 	}
