@@ -117,6 +117,14 @@ Lines.prototype.deleteResult = function* () {
     };
 };
 
+//returns first match in line
+Lines.prototype.getFirstPositionInLine = function (index) {
+    for (var startPosition in this[index].foundPositions) {
+        if (!this[index].foundPositions.hasOwnProperty(startPosition)) continue;
+        return +startPosition;
+    };
+};
+
 //Search results-------------------------------------------------------------------------------------------------------------------
 function SearchResults () {
     Object.defineProperty(this, "size", {enumrable: false, writable: true, value: 0});

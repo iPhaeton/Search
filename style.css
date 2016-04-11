@@ -23,6 +23,23 @@ body {
 	background-size:cover;
 }
 
+.search-button {
+	width: 20px;
+	height: 20px;
+	float: left;
+	margin-left: 5px;
+}
+
+#previous-button {
+	background:url(images/arrow_left.png);
+	background-size:cover;
+}
+
+#next-button {
+	background:url(images/arrow_right.png);
+	background-size:cover;
+}
+
 #indicator {
     float: right;
 }
@@ -46,5 +63,5 @@ body {
 
 p {
 	position: relative;
-	white-space: pre;
+	white-space: pre-wrap;
 }

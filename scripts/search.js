@@ -109,30 +109,100 @@ Tree.prototype.select = function () {
 		i = 0,
 		selected = false;
 
-	//selection
-	for (var j = 0; j < this.lines.size; j++) {
-		//check, if the line is on screen
-		if (this.lines[j].computedTop < window.pageYOffset - 0.5*document.documentElement.clientHeight) continue;
+    //selection
+    //select one
+    if (sequentialCheck.checked) {
+        if (scrolled) return;
 
-		for (var startPoint in this.lines[j].foundPositions) {
-			if (!this.lines[j].foundPositions.hasOwnProperty(startPoint)) continue;
-			else startPoint = +startPoint;
+        var lineWithMatch, //number of line to select
+            selectThis, //if selection in visible area is found
+            foundVisibleLine = false; //line in visible area has been found
 
-			//check, if the symbol is visible
-			if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width < window.pageXOffset - document.documentElement.clientWidth) continue;
+        //select previous???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+        if (previousButton.dataset.clicked) {
+            previousButton.dataset.clicked = "";
+            lineWithMatch = this.selectedLine;
 
-			innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-					"' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
-			i = startPoint + offset;
-			selected = true;
+            while (lineWithMatch >=0) {
+                if (this.lines[lineWithMatch].foundPositions[this.selectedPosition].prev)
+                    selectThis = this.lines[lineWithMatch].foundPositions[this.selectedPosition].prev;
+                else
+                    lineWithMatch--;
+            };
+        }
+        //select next
+        else if (nextButton.checked) {
 
-			//check, if the symbol is visible
-			if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width > window.pageXOffset + 3*document.documentElement.clientWidth) break; //3 screens, because a symbol width is very approximate
-		};
+        }
+        //select new???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+        else {
+            for (var j = 0; j < this.lines.size; j++) {
+                //match is found in the visible area
+                if (this.lines[j].computedTop > window.pageYOffset && this.lines[j].foundPositions.size && this.lines[j].computedTop < window.pageYOffset + document.documentElement.clientHeight) {
+                    //to select the first visible line
+                    if (!foundVisibleLine) {
+                        lineWithMatch = j;
+                        foundVisibleLine = true;
+                    };
 
-		//check, if the line is on screen
-		if (this.lines[j].computedTop > window.pageYOffset + 1.5*document.documentElement.clientHeight) break;
-	};
+                    //check horizontal position
+                    for (var point in this.lines[j].foundPositions) {
+                        if (!this.lines[j].foundPositions.hasOwnProperty(point)) continue;
+                        var horizontalPosition = this.lines.symbolMeasurements.width * (+point - this.lines[j].index);
+                        if (horizontalPosition >= window.pageXOffset && horizontalPosition <= window.pageXOffset + document.documentElement.clientWidth) {
+                            selectThis = +point;
+                            break;
+                        };
+                    };
+                }
+                //visible area is passed and a match was found before it
+                else if (this.lines[j].computedTop > window.pageYOffset + document.documentElement.clientHeight && lineWithMatch) break;
+                //remember the match before or after the visible area
+                else if (this.lines[j].foundPositions.size) lineWithMatch = j;
+
+                if (selectThis) break;
+            };
+        };
+
+        //actual selection
+        var startPoint = selectThis || this.lines.getFirstPositionInLine(lineWithMatch);
+        if (startPoint) {
+            innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
+                "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+            i = startPoint + offset;
+            selected = true;
+            this.selectedPosition = startPoint; //remember the selected position
+            this.selectedLine = lineWithMatch; // remember the line with selection
+        }
+        else selected = false;
+    }
+    //select all visibles
+    else{
+        for (var j = 0; j < this.lines.size; j++) {
+            //check, if the line is on screen
+            if (this.lines[j].computedTop < window.pageYOffset - 0.5 * document.documentElement.clientHeight) continue;
+
+            for (var startPoint in this.lines[j].foundPositions) {
+                if (!this.lines[j].foundPositions.hasOwnProperty(startPoint)) continue;
+                else startPoint = +startPoint;
+
+                //check, if the symbol is visible
+                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width < window.pageXOffset - document.documentElement.clientWidth) continue;
+
+                innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
+                    "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+                i = startPoint + offset;
+                selected = true;
+
+                //check, if the symbol is visible
+                //3 screens, because a symbol width is very approximate
+                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width > window.pageXOffset + 3 * document.documentElement.clientWidth) break;
+            };
+
+            //check, if the line is on screen
+            if (this.lines[j].computedTop > window.pageYOffset + 1.5 * document.documentElement.clientHeight) break;
+        };
+    };
 
 	//if found text is not on the screen
 	if  (!selected) {
@@ -143,6 +213,20 @@ Tree.prototype.select = function () {
 	innerHTML += this.text.slice (i);
 
 	this.parentElem.innerHTML = innerHTML;
+
+    //in case, if selected text isn't visible
+    if (sequentialCheck.checked) {
+        var highlight = this.parentElem.querySelector("span"),
+            coords = highlight.getBoundingClientRect();
+
+        if (coords.top < 0 || coords.bottom > document.documentElement.clientHeight) {
+            window.scrollTo (0, Math.max (0, window.pageYOffset + coords.top - document.documentElement.clientHeight/5));
+        };
+
+        if (coords.left < 0 || coords.right > document.documentElement.clientWidth) {
+            window.scrollTo(Math.max (0, window.pageXOffset + coords.left - document.documentElement.clientWidth/5), 0)
+        };
+    };
 
 	//show complex style
     if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
@@ -178,6 +262,7 @@ Tree.prototype.showComplexStyle = function () {
 //Deselect all
 Tree.prototype.deselectAll = function () {
 	this.parentElem.innerHTML = this.text;
+    this.selectedPosition = undefined;
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

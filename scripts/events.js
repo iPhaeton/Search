@@ -15,11 +15,20 @@ function documentKeyPress (event) {
 };
 
 //deselect all
-function documentClick (event) {
+function searchPanelClick (event) {
+	//close
 	if (findTarget (event.target, "close-button")) {
 		showSearchPanel ();
 		return;
 	}
+
+	//navigation buttons
+	var target = findTarget(event.target, "previous-button") || findTarget(event.target, "next-button");
+	if (target) {
+		target.dataset.clicked = "true";
+		tree.select();
+		return
+	};
 	
 	if (findTarget (event.target, "search-panel")) return;
 };
@@ -58,6 +67,9 @@ function searchInputInput (event) {
     showQuantity();
 };
 
+function searchPanelChange (event) {
+	if (findTarget(event.target, "sequential") && searchInput.value) tree.select();
+};
 
 //selection of only visible text
 function documentScroll () {
@@ -68,8 +80,8 @@ setInterval (function () {
 	if (scrolled) {
 		scrollTimeOut = setTimeout (function () {
 			if (tree.found) tree.select ();
+			scrolled = false;
 		}, 0);
-		scrolled = false;
 	}
 }, 200);
 
@@ -117,7 +129,7 @@ function getChar(event) {
   return null; // ����. ������
 };
 
-function findTarget (target, marker) {
+function findTarget (target, marker) { //arguments - initial target and wanted target's class or id
 	while (target) {
 		if (target.classList.contains (marker) || target.id === marker) return target;
 		target = target.parentElement;
