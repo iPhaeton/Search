@@ -270,9 +270,23 @@ Tree.prototype.deselectAll = function () {
     //this.justDeselected = true;
 };
 
-Tree.prototype.gatherHTML = function (i, startPoint, offset) {
+/*Tree.prototype.gatherHTML = function (i, startPoint, offset) {
+    var textContent = splitText(this.text.slice(startPoint, startPoint + offset), " ");
+
     return this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
            "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+};*/
+
+Tree.prototype.gatherHTML = function (i, startPoint, offset) {
+    var spanTextContents = splitText(this.text.slice(startPoint, startPoint + offset), " ");
+
+    var innerHTML =  this.text.slice (i, startPoint);
+
+    for (var i = 0; i < spanTextContents.length; i++) {
+        innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre'>" + spanTextContents[i] + "</span>";
+    };
+
+    return innerHTML;
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -285,4 +299,23 @@ Tree.prototype.markLines = function () {
             this.lines.add(i + 1);
         };
     };
+};
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+function splitText (text, splitter) {
+    var string = "",
+        result = [];
+
+    for (var i = 0; i < text.length; i++) {
+        string += text[i];
+
+        if (text[i] === splitter) {
+            result.push(string);
+            string = "";
+        };
+    };
+
+    if (string) result.push(string);
+
+    return result;
 };
