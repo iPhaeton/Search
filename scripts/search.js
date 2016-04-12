@@ -178,10 +178,10 @@ Tree.prototype.select = function (callingEvent) {
         //actual selection
         var startPoint = selectThis || this.lines[lineWithMatch].getFirstPositionInLine();
         if (startPoint) {
-            innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-                "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+            innerHTML += this.gatherHTML(i, startPoint, offset);
             i = startPoint + offset;
             selected = true;
+
             this.selectedPosition = startPoint; //remember the selected position
             this.selectedLine = lineWithMatch; // remember the line with selection
         }
@@ -200,8 +200,7 @@ Tree.prototype.select = function (callingEvent) {
                 //check, if the symbol is visible
                 if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width < window.pageXOffset - document.documentElement.clientWidth) continue;
 
-                innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-                    "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
+                innerHTML += this.gatherHTML(i, startPoint, offset);
                 i = startPoint + offset;
                 selected = true;
 
@@ -269,6 +268,11 @@ Tree.prototype.showComplexStyle = function () {
 Tree.prototype.deselectAll = function () {
 	this.parentElem.innerHTML = this.text;
     //this.justDeselected = true;
+};
+
+Tree.prototype.gatherHTML = function (i, startPoint, offset) {
+    return this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
+           "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ searchInput.addEventListener("input", searchInputInput);
 
 //text
 var p = document.querySelector("p");
-var tree = new Tree(p, {default: "highlight", complex: "fancy-highlight"});
+var tree = new Tree(p, {default: "highlight"/*, complex: "fancy-highlight"*/});
 
 //indicator
 var indicator = document.getElementById("indicator");
