@@ -118,24 +118,35 @@ Tree.prototype.select = function () {
             selectThis, //if selection in visible area is found
             foundVisibleLine = false; //line in visible area has been found
 
-        //select previous???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-        if (previousButton.dataset.clicked) {
+		/*if (this.justDeselected && this.selectedPosition) { //???????????????????????????????????????????????????????????????????????????????
+			this.justDeselected = false;
+			selectThis = this.selectedPosition;
+			lineWithMatch = this.selectedLine;
+		}
+        //select previous
+        else */if (previousButton.dataset.clicked) {
             previousButton.dataset.clicked = "";
-            lineWithMatch = this.selectedLine;
-
-            while (lineWithMatch >=0) {
-                if (this.lines[lineWithMatch].foundPositions[this.selectedPosition].prev)
-                    selectThis = this.lines[lineWithMatch].foundPositions[this.selectedPosition].prev;
-                else
-                    lineWithMatch--;
-            };
+			
+			var previousToSelect = this.lines[this.selectedLine].getPreviousPosition (this.selectedPosition);
+			if (previousToSelect) {
+				selectThis = previousToSelect.selection;
+				lineWithMatch = previousToSelect.line;
+			}
+			else return;
         }
         //select next
-        else if (nextButton.checked) {
-
+        else if (nextButton.dataset.clicked) {
+			nextButton.dataset.clicked = "";
+			
+			var nextToSelect = this.lines[this.selectedLine].getNextPosition (this.selectedPosition);
+			if (nextToSelect) {
+				selectThis = nextToSelect.selection;
+				lineWithMatch = nextToSelect.line;
+			}
+			else return;
         }
-        //select new???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-        else {
+        //select new
+        else {	
             for (var j = 0; j < this.lines.size; j++) {
                 //match is found in the visible area
                 if (this.lines[j].computedTop > window.pageYOffset && this.lines[j].foundPositions.size && this.lines[j].computedTop < window.pageYOffset + document.documentElement.clientHeight) {
@@ -165,7 +176,7 @@ Tree.prototype.select = function () {
         };
 
         //actual selection
-        var startPoint = selectThis || this.lines.getFirstPositionInLine(lineWithMatch);
+        var startPoint = selectThis || this.lines[lineWithMatch].getFirstPositionInLine();
         if (startPoint) {
             innerHTML += this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
                 "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
@@ -262,7 +273,7 @@ Tree.prototype.showComplexStyle = function () {
 //Deselect all
 Tree.prototype.deselectAll = function () {
 	this.parentElem.innerHTML = this.text;
-    this.selectedPosition = undefined;
+    //this.justDeselected = true;
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

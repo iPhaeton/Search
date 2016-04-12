@@ -27,7 +27,7 @@ Lines.prototype = Object.create(Arr.prototype);
 Lines.prototype.constructor = Lines;
 
 Lines.prototype.add = function (item) {
-    this[this.size] = {index: item, foundPositions: new SearchResults ()};
+    this[this.size] = new Line (item, this.size, this);
     this.size++;
 };
 
@@ -75,7 +75,7 @@ Lines.prototype.measureLines = function () {
 
 Lines.prototype.clearResults = function () {
     for (var i = 0; i < this.size; i++) {
-        this[i].foundPositions = new SearchResults ();
+        this[i].foundPositions = new SearchResults (this);
     };
     this.quantity = 0;
 };
@@ -117,18 +117,45 @@ Lines.prototype.deleteResult = function* () {
     };
 };
 
+//Line-----------------------------------------------------------------------------------------------------------------------------
+function Line (item, selfIndex, parent) {
+	this.index = item;
+	this.selfIndex = selfIndex;
+	this.parent = parent;
+	this.foundPositions = new SearchResults ();
+};
+
 //returns first match in line
-Lines.prototype.getFirstPositionInLine = function (index) {
-    for (var startPosition in this[index].foundPositions) {
-        if (!this[index].foundPositions.hasOwnProperty(startPosition)) continue;
+Line.prototype.getFirstPositionInLine = function (index) {
+    for (var startPosition in this.foundPositions) {
+        if (!this.foundPositions.hasOwnProperty(startPosition)) continue;
         return +startPosition;
     };
+};
+
+//returns last match in line
+Line.prototype.getLastPositionInLine = function (index) {
+	return this.foundPositions.lastPosition;
+};
+
+Line.prototype.getNextPosition = function (index) {
+	if (this.foundPositions[index].next) return {selection: this.foundPositions[index].next, line: this.selfIndex};
+	else {		
+		for (var i = this.selfIndex + 1; i < this.parent.size; i++) {
+			var toReturn = this.parent[i].getFirstPositionInLine ();
+			if (toReturn) return {selection: toReturn, line: i};
+		};
+	};
+	
+	return false;
 };
 
 //Search results-------------------------------------------------------------------------------------------------------------------
 function SearchResults () {
     Object.defineProperty(this, "size", {enumrable: false, writable: true, value: 0});
     Object.defineProperty(this, "_previous", {enumrable: false, writable: true, value: undefined});
+	Object.defineProperty(this, "lastPosition", {enumrable: false, writable: true, value: null});
+	Object.defineProperty(this, "_parent", {enumrable: false, value: parent});
 };
 
 SearchResults.prototype.add = function (item) {
@@ -140,11 +167,20 @@ SearchResults.prototype.add = function (item) {
 
     this._previous = item;
     this.size++;
+	this.lastPosition = item;
 }
 
 SearchResults.prototype.delete = function (item) {
-    if (this[item].prev) this[this[item].prev].next = this[item].next;
-    if (this[item].next) this[this[item].next].prev = this[item].prev;
+    if (this[item].prev) {
+		if (this.lastPosition === item) this.lastPosition = this[item].prev; //redifine the last match of the line
+		
+		this[this[item].prev].next = this[item].next; //redefine the link of the previous match
+	}
+	else {
+		if (this.lastPosition === item) this.lastPosition = null; //redifine the last match of the line
+	};
+	
+    if (this[item].next) this[this[item].next].prev = this[item].prev; //redefine the link of the next match
 
     delete this[item];
     this.size--;

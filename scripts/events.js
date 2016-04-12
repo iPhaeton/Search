@@ -35,11 +35,10 @@ function searchPanelClick (event) {
 
 //select of search panel invoke
 function searchPanelFocus (event) {
-	if (findTarget(event.target, "close-button")) return;
+	if (findTarget(event.target, "close-button") || findTarget(event.target, "search-button")) return; //new search isn't needed if a click was on the close button
 
-	var searchInput = document.getElementById("search-input");
-	searchInput.focus();
-
+	if (!findTarget(event.target, "search-input")) searchInput.focus();
+	
 	if (tree.found && searchInput.value)
 		tree.select();
 	else if (!tree.found && searchInput.value) {
