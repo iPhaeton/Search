@@ -126,7 +126,7 @@ function Line (item, selfIndex, parent) {
 };
 
 //returns first match in line
-Line.prototype.getFirstPositionInLine = function (index) {
+Line.prototype.getFirstPositionInLine = function () {
     for (var startPosition in this.foundPositions) {
         if (!this.foundPositions.hasOwnProperty(startPosition)) continue;
         return +startPosition;
@@ -134,10 +134,11 @@ Line.prototype.getFirstPositionInLine = function (index) {
 };
 
 //returns last match in line
-Line.prototype.getLastPositionInLine = function (index) {
+Line.prototype.getLastPositionInLine = function () {
 	return this.foundPositions.lastPosition;
 };
 
+//returns the next to the index position
 Line.prototype.getNextPosition = function (index) {
 	if (this.foundPositions[index].next) return {selection: this.foundPositions[index].next, line: this.selfIndex};
 	else {		
@@ -148,6 +149,17 @@ Line.prototype.getNextPosition = function (index) {
 	};
 	
 	return false;
+};
+
+//returns the previous to the index position
+Line.prototype.getPreviousPosition = function (index) {
+    if (this.foundPositions[index].prev) return {selection: this.foundPositions[index].prev, line: this.selfIndex};
+    else {
+        for (var i = this.selfIndex - 1; i >= 0; i--) {
+            var toReturn = this.parent[i].getLastPositionInLine();
+            if (toReturn) return {selection: toReturn, line: i};
+        };
+    };
 };
 
 //Search results-------------------------------------------------------------------------------------------------------------------

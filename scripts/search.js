@@ -103,7 +103,7 @@ Tree.prototype.search = function (str) {
 
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Selection of found matches after search
-Tree.prototype.select = function () {
+Tree.prototype.select = function (callingEvent) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0,
@@ -118,13 +118,13 @@ Tree.prototype.select = function () {
             selectThis, //if selection in visible area is found
             foundVisibleLine = false; //line in visible area has been found
 
-		/*if (this.justDeselected && this.selectedPosition) { //???????????????????????????????????????????????????????????????????????????????
+		if (callingEvent === "focus") { //???????????????????????????????????????????????????????????????????????????????
 			this.justDeselected = false;
 			selectThis = this.selectedPosition;
 			lineWithMatch = this.selectedLine;
 		}
         //select previous
-        else */if (previousButton.dataset.clicked) {
+        else if (previousButton.dataset.clicked) {
             previousButton.dataset.clicked = "";
 			
 			var previousToSelect = this.lines[this.selectedLine].getPreviousPosition (this.selectedPosition);
@@ -230,7 +230,7 @@ Tree.prototype.select = function () {
         var highlight = this.parentElem.querySelector("span"),
             coords = highlight.getBoundingClientRect();
 
-        if (coords.top < 0 || coords.bottom > document.documentElement.clientHeight) {
+        if (coords.top < searchPanel.offsetHeight || coords.bottom > document.documentElement.clientHeight) {
             window.scrollTo (0, Math.max (0, window.pageYOffset + coords.top - document.documentElement.clientHeight/5));
         };
 
@@ -241,11 +241,6 @@ Tree.prototype.select = function () {
 
 	//show complex style
     if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
-
-    /*var d = document.createElement("div");
-    d.textContent = innerHTML;
-    d.style.border = "1px solid red";
-    document.body.appendChild(d);*/
 };
 
 //Add divs to show complex style

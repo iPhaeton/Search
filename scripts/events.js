@@ -24,7 +24,7 @@ function searchPanelClick (event) {
 
 	//navigation buttons
 	var target = findTarget(event.target, "previous-button") || findTarget(event.target, "next-button");
-	if (target) {
+	if (target && sequentialCheck.checked) {
 		target.dataset.clicked = "true";
 		tree.select();
 		return
@@ -40,10 +40,10 @@ function searchPanelFocus (event) {
 	if (!findTarget(event.target, "search-input")) searchInput.focus();
 	
 	if (tree.found && searchInput.value)
-		tree.select();
+		tree.select("focus");
 	else if (!tree.found && searchInput.value) {
 		tree.search (searchInput.value);
-		tree.select();
+		tree.select("focus");
 	};
 };
 
