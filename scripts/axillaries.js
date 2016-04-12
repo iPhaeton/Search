@@ -109,8 +109,10 @@ Lines.prototype.deleteResult = function* () {
         else var nextIndex = this.tree.text.length;
 
         if (nextToDelete < nextIndex) {
-            if (this[j].foundPositions.has(nextToDelete)) this[j].foundPositions.delete(nextToDelete);
-            this.quantity--;
+            if (this[j].foundPositions.has(nextToDelete)) {
+                this[j].foundPositions.delete(nextToDelete);
+                this.quantity--;
+            };
             nextToDelete = yield;
         }
         else j++;
