@@ -118,7 +118,7 @@ Tree.prototype.select = function (callingEvent) {
             selectThis, //if selection in visible area is found
             foundVisibleLine = false; //line in visible area has been found
 
-		if (callingEvent === "focus") { //???????????????????????????????????????????????????????????????????????????????
+		if (callingEvent === "focus") {
 			this.justDeselected = false;
 			selectThis = this.selectedPosition;
 			lineWithMatch = this.selectedLine;
@@ -240,6 +240,13 @@ Tree.prototype.select = function (callingEvent) {
 
 	//show complex style
     if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
+	
+	if (!debuggingDiv) {
+		debuggingDiv = document.createElement ("div");
+		debuggingDiv.textContent = innerHTML;
+		debuggingDiv.style.border = "1px solid red";
+		document.body.appendChild (debuggingDiv);
+	};
 };
 
 //Add divs to show complex style
@@ -270,20 +277,15 @@ Tree.prototype.deselectAll = function () {
     //this.justDeselected = true;
 };
 
-/*Tree.prototype.gatherHTML = function (i, startPoint, offset) {
-    var textContent = splitText(this.text.slice(startPoint, startPoint + offset), " ");
-
-    return this.text.slice (i, startPoint) + "<span class='" + this.defStyle + "' data-position='" + startPoint +
-           "' style='white-space: pre'>" + this.text.slice (startPoint, startPoint + offset) + "</span>";
-};*/
-
 Tree.prototype.gatherHTML = function (i, startPoint, offset) {
     var spanTextContents = splitText(this.text.slice(startPoint, startPoint + offset), " ");
 
     var innerHTML =  this.text.slice (i, startPoint);
-
-    for (var i = 0; i < spanTextContents.length; i++) {
-        innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre'>" + spanTextContents[i] + "</span>";
+	
+	innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre'>" + spanTextContents[0] + "</span>";
+	var float  = "float: left";
+    for (var i = 1; i < spanTextContents.length; i++) {
+        innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre" + float +"'>" + spanTextContents[i] + "</span>";
     };
 
     return innerHTML;
@@ -310,7 +312,8 @@ function splitText (text, splitter) {
         string += text[i];
 
         if (text[i] === splitter) {
-            result.push(string);
+            result.push(string.slice(0, -1));
+			result.push(splitter);
             string = "";
         };
     };

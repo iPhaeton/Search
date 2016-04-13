@@ -35,6 +35,9 @@ var registerCheck = document.getElementsByTagName("register");
 var previousButton = document.getElementById("previous-button");
 var nextButton = document.getElementById("next-button");
 
+//for debugging
+var debuggingDiv;
+
 //------------------------------------------------------------------------------------------------------
 /*
 5. Selection on different lines?
