@@ -262,11 +262,36 @@ Tree.prototype.showComplexStyle = function () {
 		topOffset = parseInt(style.paddingTop) + parseInt(style.marginTop) + parseInt(style.borderTopWidth);
 	spans[0].classList.remove (this.cmplxStyle);
 	
-	for (var i = 0; i < spans.length; i++) {
+	/*for (var i = 0; i < spans.length; i++) {
 		var coords = spans[i].getBoundingClientRect();
 		innerHTML += "<div class='" + this.cmplxStyle + "' style='white-space:pre; position:absolute; top:" + (coords.top - parentCoodrs.top - topOffset) + "px; left:" + 
 		(coords.left + window.pageXOffset - leftOffset) + "px'>" + spans[i].textContent + "</div>";
+	};*/
+	
+	for (var i = 0; i < spans.length; i++) {
+		var coords = spans[i].getBoundingClientRect();
+		
+		//gether adjacent spans tougether
+		//if two spans are located next to each other, in the same line of text, their texts go into one div
+		//(to join a single-line text that was divided due to multiline selection)
+		var text = spans [i].textContent,
+			thisCoords = coords;;
+		for (var j = i + 1; j < spans.length; j++) {
+			var nextCoords = spans[j].getBoundingClientRect();
+			
+			if ((nextCoords.top === thisCoords.top) && (nextCoords.left - thisCoords.right <= 1)) {
+				text += spans[j].textContent;
+				thisCoords = nextCoords;
+			}
+			else break;
+		};
+		
+		innerHTML += "<div class='" + this.cmplxStyle + "' style='white-space:pre; position:absolute; top:" + (coords.top - parentCoodrs.top - topOffset) + "px; left:" + 
+		(coords.left + window.pageXOffset - leftOffset) + "px'>" + text + "</div>";
+		
+		i = j - 1;
 	};
+
 	
 	return innerHTML;
 };
@@ -278,10 +303,11 @@ Tree.prototype.deselectAll = function () {
 };
 
 Tree.prototype.gatherHTML = function (i, startPoint, offset) {
-    var spanTextContents = splitText(this.text.slice(startPoint, startPoint + offset), " ");
+    var spanTextContents = splitText(this.text.slice(startPoint, startPoint + offset), " "); //to deal with multiline selection
 
     var innerHTML =  this.text.slice (i, startPoint);
 	
+	//if text in a span contains spaces, words and spaces go into different spans (to deal with multiline selection)
 	innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre'>" + spanTextContents[0] + "</span>";
 	var float  = "float: left";
     for (var i = 1; i < spanTextContents.length; i++) {
