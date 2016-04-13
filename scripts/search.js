@@ -2,13 +2,14 @@
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
 function Tree (parentElem, style) {
 	this.text = parentElem.textContent;
-
 	this.parentElem = parentElem;
-    this.widths = {};
-    this.measureWidths(this.text);
+
+    this.markLines();
+    this.lines.measureLines();
 
     //set style
-    this.style = style || "highlight-default";
+    this.defStyle = style.default || "highlight-default";
+	this.cmplxStyle = style.complex;
 
     var current,
         previous,
@@ -47,22 +48,23 @@ function Tree (parentElem, style) {
     };
 	
 	this.found = ""; //text which was found and selected, initially empty
-	this.foundPositions = new Set (); //positions of existing selections, initially empty
-    this.previousFoundPositions = new Set (); //result of the previous search
+    this.foundPositions = new SearchResults (); //positions of existing selections, initially empty
 };
 
 //Search-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Search by a letter colocation
 Tree.prototype.search = function (str) {
+	var timeStart = performance.now();
+
 	if (str === this.found) return true;
 
 	this.found = str;
-	this.foundPositions.clear ();
-	
+    this.lines.clearResults();
+
+	var j = 0;
     if (this.found.length === 1) {
-		for (var index of this[this.found].indecies) {
-			this.foundPositions.add (index);
-		};
+		this.lines.setResults(this[this.found].indecies);
+		//alert(performance.now() - timeStart);
 		return true;
 	};
 
@@ -74,9 +76,7 @@ Tree.prototype.search = function (str) {
         this.found = "";
         return false;
     };
-    for (var index of this[currentSymbol].children[nextSymbol]) {
-        this.foundPositions.add (index);
-    };
+	this.lines.setResults(this[currentSymbol].children[nextSymbol]);
 
 	//go from parent to child, if there is no next child, delete the corresponding property from result
     for (var i = 1; i < this.found.length - 1; i++) {
@@ -87,121 +87,264 @@ Tree.prototype.search = function (str) {
             return false;
         };
 
+		var gen = this.lines.deleteResult();
+		gen.next();
         for (var index of this[currentSymbol].parents[previousSymbol]) {
-            if (!this[currentSymbol].children[nextSymbol].has(index)) this.foundPositions.delete(index - i);
+            if (!this[currentSymbol].children[nextSymbol].has(index))
+				gen.next(index - i);
         };
 
         previousSymbol = currentSymbol;
     };
 
-    return true;
-};
-
-Tree.prototype.sequentialSearch = function (symbol) {
-    this.previousFoundPositions = this.cloneResults(this.foundPositions);
-
-    this.found += symbol;
-
-    //no such symbol
-    if (!this[symbol]) {
-        this.found = "";
-        return false;
-    };
-
-    //first entered symbol
-    if (!this.foundPositions.size) {
-        for (var index of this[symbol].indecies) {
-            this.foundPositions.add(index);
-        };
-        return true;
-    };
-
-    //next symbols
-    var previousSymbol = this.found.charAt(this.found.length - 2);
-    if (!this[symbol].parents[previousSymbol]) {
-        this.found = "";
-        return false;
-    } //no connection to the previous entered symbol
-
-    for (var index of this.foundPositions) {
-        index += this.found.length - 1;
-        if (!this[symbol].parents[previousSymbol].has(index)) this.foundPositions.delete (index - this.found.length + 1);
-    };
+	//alert(performance.now() - timeStart);
     return true;
 };
 
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Selection of found matches after search
-Tree.prototype.select = function (points) {
+Tree.prototype.select = function (callingEvent) {
 	var offset = this.found.length,
 		innerHTML = "",
-		i = 0;
+		i = 0,
+		selected = false;
 
-	for (var startPoint of points) {
-		innerHTML += this.text.slice (i, startPoint) + "<div class='" + this.style + "' data-position='" + startPoint +
-            "' style='display: inline; position: absolute'>" + this.text.slice (startPoint, startPoint + offset) + "</div>";
-		i = startPoint;// + offset;
+    //selection
+    //select one
+    if (sequentialCheck.checked) {
+        if (scrolled) return;
+
+        var lineWithMatch, //number of line to select
+            selectThis, //if selection in visible area is found
+            foundVisibleLine = false; //line in visible area has been found
+
+		if (callingEvent === "focus") {
+			this.justDeselected = false;
+			selectThis = this.selectedPosition;
+			lineWithMatch = this.selectedLine;
+		}
+        //select previous
+        else if (previousButton.dataset.clicked) {
+            previousButton.dataset.clicked = "";
+			
+			var previousToSelect = this.lines[this.selectedLine].getPreviousPosition (this.selectedPosition);
+			if (previousToSelect) {
+				selectThis = previousToSelect.selection;
+				lineWithMatch = previousToSelect.line;
+			}
+			else return;
+        }
+        //select next
+        else if (nextButton.dataset.clicked) {
+			nextButton.dataset.clicked = "";
+			
+			var nextToSelect = this.lines[this.selectedLine].getNextPosition (this.selectedPosition);
+			if (nextToSelect) {
+				selectThis = nextToSelect.selection;
+				lineWithMatch = nextToSelect.line;
+			}
+			else return;
+        }
+        //select new
+        else {	
+            for (var j = 0; j < this.lines.size; j++) {
+                //match is found in the visible area
+                if (this.lines[j].computedTop > window.pageYOffset && this.lines[j].foundPositions.size && this.lines[j].computedTop < window.pageYOffset + document.documentElement.clientHeight) {
+                    //to select the first visible line
+                    if (!foundVisibleLine) {
+                        lineWithMatch = j;
+                        foundVisibleLine = true;
+                    };
+
+                    //check horizontal position
+                    for (var point in this.lines[j].foundPositions) {
+                        if (!this.lines[j].foundPositions.hasOwnProperty(point)) continue;
+                        var horizontalPosition = this.lines.symbolMeasurements.width * (+point - this.lines[j].index);
+                        if (horizontalPosition >= window.pageXOffset && horizontalPosition <= window.pageXOffset + document.documentElement.clientWidth) {
+                            selectThis = +point;
+                            break;
+                        };
+                    };
+                }
+                //visible area is passed and a match was found before it
+                else if (this.lines[j].computedTop > window.pageYOffset + document.documentElement.clientHeight && lineWithMatch) break;
+                //remember the match before or after the visible area
+                else if (this.lines[j].foundPositions.size) lineWithMatch = j;
+
+                if (selectThis) break;
+            };
+        };
+
+        //actual selection
+        var startPoint = selectThis || this.lines[lineWithMatch].getFirstPositionInLine();
+        if (startPoint) {
+            innerHTML += this.gatherHTML(i, startPoint, offset);
+            i = startPoint + offset;
+            selected = true;
+
+            this.selectedPosition = startPoint; //remember the selected position
+            this.selectedLine = lineWithMatch; // remember the line with selection
+        }
+        else selected = false;
+    }
+    //select all visibles
+    else{
+        for (var j = 0; j < this.lines.size; j++) {
+            //check, if the line is on screen
+            if (this.lines[j].computedTop < window.pageYOffset - 0.5 * document.documentElement.clientHeight) continue;
+
+            for (var startPoint in this.lines[j].foundPositions) {
+                if (!this.lines[j].foundPositions.hasOwnProperty(startPoint)) continue;
+                else startPoint = +startPoint;
+
+                //check, if the symbol is visible
+                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width < window.pageXOffset - document.documentElement.clientWidth) continue;
+
+                innerHTML += this.gatherHTML(i, startPoint, offset);
+                i = startPoint + offset;
+                selected = true;
+
+                //check, if the symbol is visible
+                //3 screens, because a symbol width is very approximate
+                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width > window.pageXOffset + 3 * document.documentElement.clientWidth) break;
+            };
+
+            //check, if the line is on screen
+            if (this.lines[j].computedTop > window.pageYOffset + 1.5 * document.documentElement.clientHeight) break;
+        };
+    };
+
+	//if found text is not on the screen
+	if  (!selected) {
+		this.deselectAll ();
+		return;
 	};
-	
-	innerHTML += this.text.slice (startPoint);
+
+	innerHTML += this.text.slice (i);
 
 	this.parentElem.innerHTML = innerHTML;
-    if (this.complexStyle) this.showSelection(this.foundPositions);
 
-    /*var d = document.createElement("div");
-    d.textContent = innerHTML;
-    d.style.border = "1px solid red";
-    document.body.appendChild(d);*/
+    //in case, if selected text isn't visible
+    if (sequentialCheck.checked) {
+        var highlight = this.parentElem.querySelector("span"),
+            coords = highlight.getBoundingClientRect();
+
+        if (coords.top < searchPanel.offsetHeight || coords.bottom > document.documentElement.clientHeight) {
+            window.scrollTo (0, Math.max (0, window.pageYOffset + coords.top - document.documentElement.clientHeight/5));
+        };
+
+        if (coords.left < 0 || coords.right > document.documentElement.clientWidth) {
+            window.scrollTo(Math.max (0, window.pageXOffset + coords.left - document.documentElement.clientWidth/5), 0)
+        };
+    };
+
+	//show complex style
+    if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
+	
+	if (!debuggingDiv) {
+		debuggingDiv = document.createElement ("div");
+		debuggingDiv.textContent = innerHTML;
+		debuggingDiv.style.border = "1px solid red";
+		document.body.appendChild (debuggingDiv);
+	};
+};
+
+//Add divs to show complex style
+Tree.prototype.showComplexStyle = function () {
+	var spans = this.parentElem.getElementsByClassName (this.defStyle);
+		innerHTML = "",
+		parentCoodrs = this.parentElem.getBoundingClientRect();
+		
+	//check borders
+	spans[0].classList.add (this.cmplxStyle);
+	var style = getComputedStyle(spans[0]),
+		leftOffset = parseInt(style.paddingLeft) + parseInt(style.marginLeft) + parseInt(style.borderLeftWidth);
+		topOffset = parseInt(style.paddingTop) + parseInt(style.marginTop) + parseInt(style.borderTopWidth);
+	spans[0].classList.remove (this.cmplxStyle);
+	
+	/*for (var i = 0; i < spans.length; i++) {
+		var coords = spans[i].getBoundingClientRect();
+		innerHTML += "<div class='" + this.cmplxStyle + "' style='white-space:pre; position:absolute; top:" + (coords.top - parentCoodrs.top - topOffset) + "px; left:" + 
+		(coords.left + window.pageXOffset - leftOffset) + "px'>" + spans[i].textContent + "</div>";
+	};*/
+	
+	for (var i = 0; i < spans.length; i++) {
+		var coords = spans[i].getBoundingClientRect();
+		
+		//gether adjacent spans tougether
+		//if two spans are located next to each other, in the same line of text, their texts go into one div
+		//(to join a single-line text that was divided due to multiline selection)
+		var text = spans [i].textContent,
+			thisCoords = coords;;
+		for (var j = i + 1; j < spans.length; j++) {
+			var nextCoords = spans[j].getBoundingClientRect();
+			
+			if ((nextCoords.top === thisCoords.top) && (nextCoords.left - thisCoords.right <= 1)) {
+				text += spans[j].textContent;
+				thisCoords = nextCoords;
+			}
+			else break;
+		};
+		
+		innerHTML += "<div class='" + this.cmplxStyle + "' style='white-space:pre; position:absolute; top:" + (coords.top - parentCoodrs.top - topOffset) + "px; left:" + 
+		(coords.left + window.pageXOffset - leftOffset) + "px'>" + text + "</div>";
+		
+		i = j - 1;
+	};
+
+	
+	return innerHTML;
 };
 
 //Deselect all
 Tree.prototype.deselectAll = function () {
 	this.parentElem.innerHTML = this.text;
+    //this.justDeselected = true;
+};
+
+Tree.prototype.gatherHTML = function (i, startPoint, offset) {
+    var spanTextContents = splitText(this.text.slice(startPoint, startPoint + offset), " "); //to deal with multiline selection
+
+    var innerHTML =  this.text.slice (i, startPoint);
+	
+	//if text in a span contains spaces, words and spaces go into different spans (to deal with multiline selection)
+	innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre'>" + spanTextContents[0] + "</span>";
+	var float  = "float: left";
+    for (var i = 1; i < spanTextContents.length; i++) {
+        innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre" + float +"'>" + spanTextContents[i] + "</span>";
+    };
+
+    return innerHTML;
 };
 
 //Axillary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//Clear the results of the last search
-Tree.prototype.clear = function () {
-	this.deselectAll ();
-	this.found = "";
-	this.foundPositions.clear ();
-};
+Tree.prototype.markLines = function () {
+    this.lines = new Lines(this);
+    this.lines.add (0);
 
-//Copy results of a search in case of deletion of the last symbol
-Tree.prototype.cloneResults = function (set) {
-    var clone = new Set ();
-    for (var i of set) {
-        clone.add(i);
+    for (var i = 0; i < this.text.length; i++) {
+        if (this.text[i] === "\n") {
+            this.lines.add(i + 1);
+        };
     };
-    return clone;
 };
 
-Tree.prototype.measureWidths = function (text) {
-    //set a div
-    var divForMeasurement = document.createElement("div");
-    divForMeasurement.style.display = "inline-block";
-    document.body.appendChild(divForMeasurement);
-    divForMeasurement.textContent = "a";
-    this.etalon = divForMeasurement.clientWidth;
+//---------------------------------------------------------------------------------------------------------------------------------------
+function splitText (text, splitter) {
+    var string = "",
+        result = [];
 
-    //measure width of every symbol
-    for  (var i = 0; i < text.length; i++) {
-        if (!this.widths[text[i]]) {
-            divForMeasurement.textContent = text[i];
-            this.widths[text[i]] = this.measureDiv(divForMeasurement);
+    for (var i = 0; i < text.length; i++) {
+        string += text[i];
+
+        if (text[i] === splitter) {
+            result.push(string.slice(0, -1));
+			result.push(splitter);
+            string = "";
         };
     };
 
-    //remove the div
-    document.body.removeChild(divForMeasurement);
-};
+    if (string) result.push(string);
 
-Tree.prototype.measureDiv = function (div) {
-    if (!div.clientWidth) {
-        div.textContent = "a" + div.textContent + "a";
-        return div.clientWidth - 2*this.etalon;
-    }
-    else {
-        return div.clientWidth;
-    };
+    return result;
 };

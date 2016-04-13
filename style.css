@@ -18,10 +18,30 @@ body {
 .close-button {
 	width:20px;
 	height:20px;
-	/*background-color:#aaa;*/
 	float:right;
 	background:url(images/gtk-close.png);
 	background-size:cover;
+}
+
+.search-button {
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	margin-left: 5px;
+}
+
+#previous-button {
+	background:url(images/arrow_left.png);
+	background-size:cover;
+}
+
+#next-button {
+	background:url(images/arrow_right.png);
+	background-size:cover;
+}
+
+#indicator {
+    float: right;
 }
 
 #search-input {
@@ -34,4 +54,14 @@ body {
 
 .highlight {
 	background-color: rgb(150, 255, 100);
+}
+
+.fancy-highlight {
+	background-color: rgb(150, 255, 100);
+	border: 1px dashed red;
+}
+
+p {
+	position: relative;
+	white-space: pre-wrap;
 }

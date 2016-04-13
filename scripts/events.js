@@ -1,6 +1,6 @@
 //invoke search panel
 function documentKeyDown (event) {
-	if (event.ctrlKey && event.keyCode === 70) {
+	if ((event.ctrlKey && event.keyCode === 70) || (event.keyCode === 27 && !searchPanel.hidden)) {
 		showSearchPanel ();
 		event.preventDefault ();
 	};
@@ -15,45 +15,74 @@ function documentKeyPress (event) {
 };
 
 //deselect all
-function documentClick (event) {
+function searchPanelClick (event) {
+	//close
 	if (findTarget (event.target, "close-button")) {
 		showSearchPanel ();
 		return;
 	}
+
+	//navigation buttons
+	var target = findTarget(event.target, "previous-button") || findTarget(event.target, "next-button");
+	if (target && sequentialCheck.checked) {
+		target.dataset.clicked = "true";
+		tree.select();
+		return
+	};
 	
 	if (findTarget (event.target, "search-panel")) return;
-	
-	tree.deselectAll ();
 };
 
 //select of search panel invoke
 function searchPanelFocus (event) {
-	if (findTarget(event.target, "close-button")) return;
+	if (findTarget(event.target, "close-button") || findTarget(event.target, "search-button")) return; //new search isn't needed if a click was on the close button
 
-	var searchInput = document.getElementById("search-input");
-	if (tree.foundPositions.size && searchInput.value) tree.select(tree.foundPositions);
+	if (!findTarget(event.target, "search-input")) searchInput.focus();
+	
+	if (tree.found && searchInput.value)
+		tree.select("focus");
 	else if (!tree.found && searchInput.value) {
 		tree.search (searchInput.value);
-		tree.select(tree.foundPositions);
-	}
+		tree.select("focus");
+	};
 };
 
 //search and select
 function searchInputInput (event) {
 	if (this.value.slice(0, -1) === tree.found && this.value.length > 1) {
-		if (tree.foundPositions.size) {
-			if (tree.sequentialSearch (this.value.slice(-1))) tree.select (tree.foundPositions);
+		//if (tree.foundPositions.size) {
+			if (tree.search (this.value)) tree.select ();
 			else tree.deselectAll();
-		};
+		//};
 	}
 	else if (this.value.length === 0) {
 		tree.deselectAll ();
 	}
 	else {
-		if (tree.search (this.value)) tree.select (tree.foundPositions);
+		if (tree.search (this.value)) tree.select ();
 		else tree.deselectAll();
 	};
+
+    showQuantity();
 };
+
+function searchPanelChange (event) {
+	if (findTarget(event.target, "sequential") && searchInput.value) tree.select();
+};
+
+//selection of only visible text
+function documentScroll () {
+	if (!searchPanel.hidden && searchInput.value) scrolled = true;
+};
+
+setInterval (function () {
+	if (scrolled) {
+		scrollTimeOut = setTimeout (function () {
+			if (tree.found) tree.select ();
+			scrolled = false;
+		}, 0);
+	}
+}, 200);
 
 //---------------------------------------------------------------------------------------------------------------------------------------
 function showSearchPanel () {
@@ -81,6 +110,7 @@ function showSearchPanel () {
 		//remove the fake div
 		var fakePanel = document.getElementById ("fake-panel");
 		document.body.removeChild (fakePanel);
+		tree.deselectAll();
 	};
 };
 
@@ -98,9 +128,15 @@ function getChar(event) {
   return null; // ����. ������
 };
 
-function findTarget (target, marker) {
+function findTarget (target, marker) { //arguments - initial target and wanted target's class or id
 	while (target) {
 		if (target.classList.contains (marker) || target.id === marker) return target;
 		target = target.parentElement;
 	};
+};
+
+//Show amount of found matches
+function showQuantity () {
+    if (searchInput.value) indicator.textContent = tree.lines.quantity;
+    else indicator.textContent = "";
 };
