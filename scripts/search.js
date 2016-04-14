@@ -244,12 +244,12 @@ Tree.prototype.select = function (callingEvent) {
 	//show complex style
     if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
 	
-	if (!debuggingDiv) {
+	/*if (!debuggingDiv) {
 		debuggingDiv = document.createElement ("div");
 		debuggingDiv.textContent = innerHTML;
 		debuggingDiv.style.border = "1px solid red";
 		document.body.appendChild (debuggingDiv);
-	};
+	};*/
 };
 
 //Add divs to show complex style
