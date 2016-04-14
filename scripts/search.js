@@ -118,13 +118,13 @@ Tree.prototype.select = function (callingEvent) {
             selectThis, //if selection in visible area is found
             foundVisibleLine = false; //line in visible area has been found
 
-		if (callingEvent === "focus") {
+		if (callingEvent === "focus" && this.selectedPosition) {
 			this.justDeselected = false;
 			selectThis = this.selectedPosition;
 			lineWithMatch = this.selectedLine;
 		}
         //select previous
-        else if (previousButton.dataset.clicked) {
+        else if (previousButton.dataset.clicked && this.selectedPosition) {
             previousButton.dataset.clicked = "";
 			
 			var previousToSelect = this.lines[this.selectedLine].getPreviousPosition (this.selectedPosition);
@@ -135,7 +135,7 @@ Tree.prototype.select = function (callingEvent) {
 			else return;
         }
         //select next
-        else if (nextButton.dataset.clicked) {
+        else if (nextButton.dataset.clicked && this.selectedPosition) {
 			nextButton.dataset.clicked = "";
 			
 			var nextToSelect = this.lines[this.selectedLine].getNextPosition (this.selectedPosition);
@@ -189,6 +189,9 @@ Tree.prototype.select = function (callingEvent) {
     }
     //select all visibles
     else{
+		this.selectedPosition = undefined;
+		this.selectedLine = undefined;
+		
         for (var j = 0; j < this.lines.size; j++) {
             //check, if the line is on screen
             if (this.lines[j].computedTop < window.pageYOffset - 0.5 * document.documentElement.clientHeight) continue;

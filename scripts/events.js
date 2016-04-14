@@ -1,8 +1,17 @@
-//invoke search panel
+//Invoke search panel
 function documentKeyDown (event) {
-	if ((event.ctrlKey && event.keyCode === 70) || (event.keyCode === 27 && !searchPanel.hidden)) {
+	if ((event.ctrlKey && event.keyCode === 70) || (event.keyCode === 27 && !searchPanel.hidden)) { //Crtl+F; Esc
 		showSearchPanel ();
 		event.preventDefault ();
+		return;
+	};
+	
+	if (event.keyCode === 13 && document.activeElement === searchInput) { //Enter
+		nextButton.dataset.clicked = "true";
+		sequentialCheck.checked = true;
+		tree.select();
+		event.preventDefault ();
+		return;
 	};
 };
 
@@ -24,8 +33,9 @@ function searchPanelClick (event) {
 
 	//navigation buttons
 	var target = findTarget(event.target, "previous-button") || findTarget(event.target, "next-button");
-	if (target && sequentialCheck.checked) {
+	if (target /*&& sequentialCheck.checked*/) {
 		target.dataset.clicked = "true";
+		sequentialCheck.checked = true;
 		tree.select();
 		return
 	};

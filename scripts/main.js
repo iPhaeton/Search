@@ -1,7 +1,7 @@
 /**
  * Created by Phaeton on 26.03.2016.
- */
- //document
+ */ 
+//document
 document.addEventListener ("keydown", documentKeyDown);
 document.addEventListener ("keypress", documentKeyPress);
 
@@ -40,9 +40,7 @@ var debuggingDiv;
 
 //------------------------------------------------------------------------------------------------------
 /*
-5. Selection on different lines?
 10. Reload on Enter
-11. Negative number on the indicator
 */
 
 /*
@@ -55,6 +53,13 @@ Errors:
 /*
 To do:
 1. Next and previous (Enter and buttons)
-2. On checking sequentialCheck
-3. Move to
  */
+ 
+/*
+About style tables: http://professorweb.ru/my/javascript/js_theory/level2/2_4.php
+*/
+ 
+ 
+function SearchObject (styles) {
+	
+};
