@@ -58,49 +58,5 @@ To do:
 /*
 About style tables: http://professorweb.ru/my/javascript/js_theory/level2/2_4.php
 */
- 
- 
-function Search (styles) {
-    this.styles = {};
 
-    this.styles.panelStyle = this.setStyle(styles.panelStyle)
-
-
-    /*var styleSheets = document.styleSheets;
-
-	for (var i = 0; i < styleSheets.length; i++) {
-        for (var j = 0; j < styleSheets[i].cssRules.length; j++) {
-            if (styleSheets[i].cssRules[j].selectorText = "#blue-div") {
-                var cssText = styleSheets[i].cssRules[j].cssText;
-                cssText = cssText.slice (cssText.indexOf("{") + 1, -1);
-
-                var blueDiv = document.createElement("div");
-                blueDiv.style.cssText = cssText;
-                document.body.appendChild(blueDiv);
-                return;
-            };
-        };
-    };*/
-};
-
-Search.prototype.setStyle = function (style) {
-    if (style) {
-        this.styles.panelStyle = getStyleFromCSS(styles.panelStyle) || styles.panelStyle;
-    }
-    else {
-
-    };
-};
-
-function getStyleFromCSS (selector) {
-    for (var i = 0; i < document.styleSheets.length; i++) {
-        for (var j = 0; j < document.styleSheets[i].cssRules.length; j++) {
-            if (styleSheets[i].cssRules[j].selectorText = "#blue-div") {
-                var cssText = styleSheets[i].cssRules[j].cssText;
-                return cssText.slice (cssText.indexOf("{") + 1, -1);
-            };
-        };
-    };
-};
-
-Search();
+var s = new Search();
