@@ -59,4 +59,4 @@ To do:
 About style tables: http://professorweb.ru/my/javascript/js_theory/level2/2_4.php
 */
 
-var s = new Search(document.body);
+var s = new Search(document.body, {hide:false});

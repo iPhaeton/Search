@@ -2,12 +2,66 @@ function Search (parent, styles) {
 	//check for DOM Element !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	this.parentElem = parent;
 
+	//Styles----------------------------------------------------------------------------------------------------------
 	//search panel
 	this.searchPanel = document.createElement ("form");
 	this.searchPanel.tabindex = "1";
 	this.setStyle(this.searchPanel, styles);
 
+	//search input
+	this.searchInput = document.createElement("input")
+	this.searchInput.type = "text";
+	this.setStyle(this.searchInput, styles);
+	this.searchPanel.appendChild(this.searchInput);
+
+	//navigation buttons
+	this.previousButton = document.createElement("div");
+	this.previousButton.tabIndex = "3";
+	this.previousButton.dataset.clicked = "";
+	this.setStyle(this.previousButton, styles);
+	this.searchPanel.appendChild(this.previousButton);
+
+	this.nextButton = document.createElement("div");
+	this.nextButton.tabIndex = "4";
+	this.nextButton.dataset.clicked = "";
+	this.setStyle(this.nextButton, styles);
+	this.searchPanel.appendChild(this.nextButton);
+
+	//checkboxwes
+	this.sequential = document.createElement("input");
+	this.sequential.type = "checkbox";
+	this.setStyle(this.sequential, styles);
+	this.searchPanel.appendChild(this.sequential);
+	this.sequentialText = document.createTextNode("Search sequentially");
+	this.searchPanel.appendChild(this.sequentialText);
+
+	this.register = document.createElement("input");
+	this.register.type = "checkbox";
+	this.setStyle(this.register, styles);
+	this.searchPanel.appendChild(this.register);
+	this.registerText = document.createTextNode("Allow for register");
+	this.searchPanel.appendChild(this.registerText);
+
+	//close button
+	this.closeButton = document.createElement("div");
+	this.closeButton.tabIndex = "2";
+	this.setStyle(this.closeButton, styles);
+	this.searchPanel.appendChild(this.closeButton);
+
+	//indicator
+	this.indicator = document.createElement("div");
+	this.setStyle(this.indicator, styles);
+	this.searchPanel.appendChild(this.indicator);
+
+	//append the panel
 	this.parentElem.appendChild(this.searchPanel);
+	//clear offset
+	this.clearOffset = document.createElement("div");
+	this.clearOffset.style.clear = "both";
+	this.parentElem.appendChild(this.clearOffset);
+
+	//Events----------------------------------------------------------------------------------------------------------
+
 };
 
 Search.prototype.setStyle = function (elem, styles) {
@@ -35,7 +89,58 @@ Search.prototype.setStyle = function (elem, styles) {
 				this.searchPanel.hidden = true;
 			};
 
-			break;
+		break;
+
+		//search input style
+		case this.searchInput:
+			var defaultStyle = "float: left";
+			var style = this.getStyleFromArgument("searchInput", styles, defaultStyle);
+		break;
+
+		//navigation buttons style
+		case this.previousButton:
+			var defaultStyle = "width: 20px;\
+								height: 20px;\
+								display: inline-block;\
+								margin-left: 5px;\
+								background: blue";
+			var  style = this.getStyleFromArgument("previousButton", styles, defaultStyle);
+		break;
+
+		case this.nextButton:
+			var defaultStyle = "width: 20px;\
+								height: 20px;\
+								display: inline-block;\
+								margin-left: 5px;\
+								background: blue";
+			var  style = this.getStyleFromArgument("nextButton", styles, defaultStyle);
+		break;
+
+		//checkboxes style
+		case this.sequential:
+			var defaultStyle = "";
+			var style = this.getStyleFromArgument("sequential", styles, defaultStyle);
+		break;
+
+		case this.register:
+			var defaultStyle = "";
+			var style = this.getStyleFromArgument("register", styles, defaultStyle);
+		break;
+
+		//close button style
+		case this.closeButton:
+				var defaultStyle = "width:20px;\
+									height:20px;\
+									float:right;\
+									background: red";
+				var style = this.getStyleFromArgument("closeButton", styles, defaultStyle);
+		break;
+
+		//indicator style
+		case this.register:
+			var defaultStyle = "";
+			var style = this.getStyleFromArgument("indicator", styles, defaultStyle);
+		break;
 	};
 	
 	elem.style.cssText = style;
