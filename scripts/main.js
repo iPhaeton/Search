@@ -1,24 +1,12 @@
 /**
  * Created by Phaeton on 26.03.2016.
- */ 
-//document
-document.addEventListener ("keydown", documentKeyDown);
-document.addEventListener ("keypress", documentKeyPress);
-
-//scroll
-var scrollTimeOut;
-var scrolled = false;
-document.addEventListener ("scroll", documentScroll);
+ */
 
 //search panel
 var searchPanel = document.getElementById ("search-panel");
 searchPanel.addEventListener("focus", searchPanelFocus, true);
 searchPanel.addEventListener ("click", searchPanelClick);
 searchPanel.addEventListener("change", searchPanelChange);
-
-//input
-var searchInput = document.getElementById ("search-input");
-searchInput.addEventListener("input", searchInputInput);
 
 //text
 var p = document.querySelector("p");
@@ -59,4 +47,4 @@ To do:
 About style tables: http://professorweb.ru/my/javascript/js_theory/level2/2_4.php
 */
 
-var s = new Search(document.body, {hide:false});
+var s = new Search(document.body);

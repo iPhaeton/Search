@@ -65,7 +65,7 @@ Tree.prototype.search = function (str) {
     if (this.found.length === 1) {
 		this.lines.setResults(this[this.found].indecies);
 		//alert(performance.now() - timeStart);
-		return true;
+		return this.found;
 	};
 
 	//set result with all indecies of the first letter
@@ -98,7 +98,7 @@ Tree.prototype.search = function (str) {
     };
 
 	//alert(performance.now() - timeStart);
-    return true;
+    return this.found;
 };
 
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -107,7 +107,8 @@ Tree.prototype.select = function (callingEvent) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0,
-		selected = false;
+		selected = false,
+        parentCoords = this.parentElem.getBoundingClientRect();
 
     //selection
     //select one
@@ -194,14 +195,14 @@ Tree.prototype.select = function (callingEvent) {
 		
         for (var j = 0; j < this.lines.size; j++) {
             //check, if the line is on screen
-            if (this.lines[j].computedTop < window.pageYOffset - 0.5 * document.documentElement.clientHeight) continue;
+            if (this.lines[j].computedTop + parentCoords.top < -0.5 * document.documentElement.clientHeight) continue;
 
             for (var startPoint in this.lines[j].foundPositions) {
                 if (!this.lines[j].foundPositions.hasOwnProperty(startPoint)) continue;
                 else startPoint = +startPoint;
 
                 //check, if the symbol is visible
-                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width < window.pageXOffset - document.documentElement.clientWidth) continue;
+                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width + parentCoords.left < -document.documentElement.clientWidth) continue;
 
                 innerHTML += this.gatherHTML(i, startPoint, offset);
                 i = startPoint + offset;
@@ -209,11 +210,11 @@ Tree.prototype.select = function (callingEvent) {
 
                 //check, if the symbol is visible
                 //3 screens, because a symbol width is very approximate
-                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width > window.pageXOffset + 3 * document.documentElement.clientWidth) break;
+                if ((startPoint - this.lines[j].index) * this.lines.symbolMeasurements.width + parentCoords.left > 3 * document.documentElement.clientWidth) break;
             };
 
             //check, if the line is on screen
-            if (this.lines[j].computedTop > window.pageYOffset + 1.5 * document.documentElement.clientHeight) break;
+            if (this.lines[j].computedTop + parentCoords.top > 1.5 * document.documentElement.clientHeight) break;
         };
     };
 

@@ -1,6 +1,7 @@
 function Search (parent, styles) {
 	//check for DOM Element !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	this.parentElem = parent;
+	this.found = false;
 
 	//Styles----------------------------------------------------------------------------------------------------------
 	//search panel
@@ -61,7 +62,31 @@ function Search (parent, styles) {
 	this.parentElem.appendChild(this.clearOffset);
 
 	//Events----------------------------------------------------------------------------------------------------------
+	//invoke panel
+	this.parentElem.addEventListener ("keydown", this.keyDown(this));
+	this.parentElem.addEventListener ("keypress", this.keyPress);
+	//input
+	this.searchInput.addEventListener("input", this.searchInputInput(this));
+	//scroll
+	this.scrolled = false;
+	document.addEventListener ("scroll", this.scroll(this));
+	setInterval (this.setTimerOnScroll(this), 200);
 
+	//Gather text----------------------------------------------------------------------------------------------------
+	this.textElements = new Set ();
+	this.collectTextElements(this.parentElem);
+};
+
+Search.prototype.collectTextElements = function (elem) {
+	if (!elem.children.length && hasOnlyText(elem)) {
+		this.textElements.add (new Tree(elem, {default: "highlight"}));
+	}
+	else{
+		for (var i = 0; i < elem.children.length; i++) {
+			if (elem.children[i].hidden || elem.children[i] === this.searchPanel) continue;
+			this.collectTextElements(elem.children[i]);
+		};
+	};
 };
 
 Search.prototype.setStyle = function (elem, styles) {
@@ -166,4 +191,12 @@ function getStyleFromCSS (selector) {
             };
         };
     };
+};
+
+function hasOnlyText (elem) {
+	if (!elem.childNodes.length) return false;
+	for (var i = 0; i < elem.childNodes.length; i++) {
+		if (elem.childNodes[i].nodeType !== 3) return false;
+	};
+	return true;
 };
