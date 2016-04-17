@@ -5,12 +5,11 @@
 //search panel
 var searchPanel = document.getElementById ("search-panel");
 searchPanel.addEventListener("focus", searchPanelFocus, true);
-searchPanel.addEventListener ("click", searchPanelClick);
 searchPanel.addEventListener("change", searchPanelChange);
 
 //text
-var p = document.querySelector("p");
-var tree = new Tree(p, {default: "highlight", complex: "fancy-highlight"});
+//var p = document.querySelector("p");
+//var tree = new Tree(p, {default: "highlight", complex: "fancy-highlight"});
 
 //indicator
 var indicator = document.getElementById("indicator");

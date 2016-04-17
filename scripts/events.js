@@ -29,23 +29,36 @@ Search.prototype.keyPress = function (event) {
 Search.prototype.searchInputInput = function (self) {
 	return function (event) {
 		if (this.value.length) {
-			for (var tree of self.textElements) {
-				self.found = tree.search (this.value);
-				if (self.found) tree.select ();
-				else tree.deselectAll();
+			//search
+			for (var i = 0; i < self.textElements.length; i++) {
+				self.found = self.textElements[i].search (this.value);
+			};
+			//selection
+			for (var i = 0; i < self.textElements.length; i++) {
+				if (self.found) {
+					if (self.textElements[i].select()) {
+						self.selectedTreeIndex = i;
+						break;
+					};
+				}
+				else {
+					self.selectedTreeIndex = undefined;
+					self.textElements[i].deselectAll();
+				};
 			};
 		}
 		else {
-			for (var tree of self.textElements) {
-				tree.deselectAll ();
+			for (var i = 0; i < self.textElements.length; i++) {
+				self.textElements[i].deselectAll ();
 			};
+			self.selectedTreeIndex = undefined;
 		};
 
 		//showQuantity();
 	};
 };
 
-//selection of only visible text
+//Selection of only visible text
 Search.prototype.scroll = function (self) {
 	return function () {
 		if (!self.searchPanel.hidden && self.searchInput.value) self.scrolled = true;
@@ -63,31 +76,61 @@ Search.prototype.setTimerOnScroll = function (self) {
 Search.prototype.executeOnScroll = function (self) {
 	return function () {
 		if (!self.found) return;
-		for (var tree of self.textElements) {
-			tree.select ();
-			self.scrolled = false;
+		for (var i = 0; i < self.textElements.length; i++) {
+			if (self.textElements[i].select()) {
+				self.selectedTreeIndex = i;
+				break;
+			};
 		};
+		self.scrolled = false;
 	};
 };
 
-//deselect all
-function searchPanelClick (event) {
-	//close
-	if (findTarget (event.target, "close-button")) {
-		showSearchPanel ();
-		return;
-	}
+//Navigiton buttons
+Search.prototype.searchPanelClick = function (self) {
+	return function (event) {
+		//close
+		if (findTarget(event.target, self.closeButton)) {
+			self.showSearchPanel();
+			return;
+		};
 
-	//navigation buttons
-	var target = findTarget(event.target, "previous-button") || findTarget(event.target, "next-button");
-	if (target /*&& sequentialCheck.checked*/) {
-		target.dataset.clicked = "true";
-		sequentialCheck.checked = true;
-		tree.select();
-		return
+		//navigation buttons
+		var target = findTarget(event.target, self.previousButton) || findTarget(event.target, self.nextButton);
+		if (target) {
+			target.dataset.clicked = "true";
+			sequentialCheck.checked = true;
+
+			//selection of previous, switch to invisible selection?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+			if (self.selectedTreeIndex !== undefined) {
+				if (!self.textElements[self.selectedTreeIndex].select()){
+					self.textElements[self.selectedTreeIndex].deselectAll();
+					if (target === self.previousButton) {
+						var end = -1,
+							increment = -1,
+							pos = "last";
+					}
+					else {
+						var end = self.textElements.length + 1,
+							increment = 1,
+							pos = "first";
+					}
+
+					var i = self.selectedTreeIndex + increment;
+					while (i !== end) {
+						if (self.textElements[i].select("click", pos)) {
+							self.selectedTreeIndex = i;
+							break;
+						};
+						i += increment;
+					};
+				};
+			};
+			return;
+		};
+
+		if (findTarget(event.target, "search-panel")) return;
 	};
-	
-	if (findTarget (event.target, "search-panel")) return;
 };
 
 //select of search panel invoke
@@ -147,9 +190,9 @@ function getChar(event) {
   return null; // ����. ������
 };
 
-function findTarget (target, marker) { //arguments - initial target and wanted target's class or id
+function findTarget (target, wanted) { //arguments - initial target and wanted target's class or id
 	while (target) {
-		if (target.classList.contains (marker) || target.id === marker) return target;
+		if (target === wanted) return target;
 		target = target.parentElement;
 	};
 };

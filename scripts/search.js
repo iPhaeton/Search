@@ -1,6 +1,7 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (parentElem, style) {
+function Tree (selfPanel, parentElem, style) {
+    this.selfPanel = selfPanel; //link to the parent search object
 	this.text = parentElem.textContent;
 	this.parentElem = parentElem;
 
@@ -103,21 +104,37 @@ Tree.prototype.search = function (str) {
 
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Selection of found matches after search
-Tree.prototype.select = function (callingEvent) {
+//gets startHere argument only when sequential selection came from another tree after pressing next or previous button
+Tree.prototype.select = function (callingEvent, startHere) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0,
 		selected = false,
-        parentCoords = this.parentElem.getBoundingClientRect();
+        parentCoords = this.parentElem.getBoundingClientRect(),
+        stopHere = false; //tells the parent search object not to continue selection after this tree
 
     //selection
     //select one
-    if (sequentialCheck.checked) {
-        if (scrolled) return;
+    if (this.selfPanel.sequentialCheck.checked) {
+        if (this.selfPanel.scrolled) return;
 
         var lineWithMatch, //number of line to select
             selectThis, //if selection in visible area is found
             foundVisibleLine = false; //line in visible area has been found
+
+        if (startHere === "first") {
+            //find first selected position
+            for (var line = 0; line < this.lines.length; line++) {
+                selectThis = this.lines[line].getFirstPositionInLine();
+                if (selectThis) {
+                    lineWithMatch = line;
+                    break;
+                };
+            };
+        }
+        else if (startHere === "last") {
+            //find last selected position
+        };
 
 		if (callingEvent === "focus" && this.selectedPosition) {
 			this.justDeselected = false;
@@ -125,8 +142,8 @@ Tree.prototype.select = function (callingEvent) {
 			lineWithMatch = this.selectedLine;
 		}
         //select previous
-        else if (previousButton.dataset.clicked && this.selectedPosition) {
-            previousButton.dataset.clicked = "";
+        else if (this.selfPanel.previousButton.dataset.clicked && this.selectedPosition) {
+            this.selfPanel.previousButton.dataset.clicked = "";
 			
 			var previousToSelect = this.lines[this.selectedLine].getPreviousPosition (this.selectedPosition);
 			if (previousToSelect) {
@@ -136,8 +153,8 @@ Tree.prototype.select = function (callingEvent) {
 			else return;
         }
         //select next
-        else if (nextButton.dataset.clicked && this.selectedPosition) {
-			nextButton.dataset.clicked = "";
+        else if (this.selfPanel.nextButton.dataset.clicked && this.selectedPosition) {
+            this.selfPanel.nextButton.dataset.clicked = "";
 			
 			var nextToSelect = this.lines[this.selectedLine].getNextPosition (this.selectedPosition);
 			if (nextToSelect) {
@@ -147,10 +164,11 @@ Tree.prototype.select = function (callingEvent) {
 			else return;
         }
         //select new
-        else {	
+        else {
             for (var j = 0; j < this.lines.size; j++) {
                 //match is found in the visible area
-                if (this.lines[j].computedTop > window.pageYOffset && this.lines[j].foundPositions.size && this.lines[j].computedTop < window.pageYOffset + document.documentElement.clientHeight) {
+                if (this.lines[j].computedTop + parentCoords.top > this.selfPanel.searchPanel.offsetHeight && this.lines[j].foundPositions.size &&
+                    this.lines[j].computedTop + parentCoords.top < document.documentElement.clientHeight) {
                     //to select the first visible line
                     if (!foundVisibleLine) {
                         lineWithMatch = j;
@@ -161,14 +179,14 @@ Tree.prototype.select = function (callingEvent) {
                     for (var point in this.lines[j].foundPositions) {
                         if (!this.lines[j].foundPositions.hasOwnProperty(point)) continue;
                         var horizontalPosition = this.lines.symbolMeasurements.width * (+point - this.lines[j].index);
-                        if (horizontalPosition >= window.pageXOffset && horizontalPosition <= window.pageXOffset + document.documentElement.clientWidth) {
+                        if (horizontalPosition + parentCoords.left >= 0 && horizontalPosition + parentCoords.left <= document.documentElement.clientWidth) {
                             selectThis = +point;
                             break;
                         };
                     };
                 }
                 //visible area is passed and a match was found before it
-                else if (this.lines[j].computedTop > window.pageYOffset + document.documentElement.clientHeight && lineWithMatch) break;
+                else if (this.lines[j].computedTop + parentCoords.top > document.documentElement.clientHeight && lineWithMatch) break;
                 //remember the match before or after the visible area
                 else if (this.lines[j].foundPositions.size) lineWithMatch = j;
 
@@ -185,6 +203,8 @@ Tree.prototype.select = function (callingEvent) {
 
             this.selectedPosition = startPoint; //remember the selected position
             this.selectedLine = lineWithMatch; // remember the line with selection
+
+            stopHere = true;
         }
         else selected = false;
     }
@@ -244,7 +264,9 @@ Tree.prototype.select = function (callingEvent) {
 
 	//show complex style
     if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
-	
+
+    return stopHere;
+
 	/*if (!debuggingDiv) {
 		debuggingDiv = document.createElement ("div");
 		debuggingDiv.textContent = innerHTML;

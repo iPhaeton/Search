@@ -2,6 +2,7 @@ function Search (parent, styles) {
 	//check for DOM Element !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	this.parentElem = parent;
 	this.found = false;
+	this.selectedTreeIndex = undefined; //tree, on which selection stopped during sequential selection
 
 	//Styles----------------------------------------------------------------------------------------------------------
 	//search panel
@@ -28,13 +29,13 @@ function Search (parent, styles) {
 	this.setStyle(this.nextButton, styles);
 	this.searchPanel.appendChild(this.nextButton);
 
-	//checkboxwes
-	this.sequential = document.createElement("input");
-	this.sequential.type = "checkbox";
-	this.setStyle(this.sequential, styles);
-	this.searchPanel.appendChild(this.sequential);
-	this.sequentialText = document.createTextNode("Search sequentially");
-	this.searchPanel.appendChild(this.sequentialText);
+	//checkboxes
+	this.sequentialCheck = document.createElement("input");
+	this.sequentialCheck.type = "checkbox";
+	this.setStyle(this.sequentialCheck, styles);
+	this.searchPanel.appendChild(this.sequentialCheck);
+	this.sequentialCheckText = document.createTextNode("Search sequentially");
+	this.searchPanel.appendChild(this.sequentialCheckText);
 
 	this.register = document.createElement("input");
 	this.register.type = "checkbox";
@@ -71,15 +72,17 @@ function Search (parent, styles) {
 	this.scrolled = false;
 	document.addEventListener ("scroll", this.scroll(this));
 	setInterval (this.setTimerOnScroll(this), 200);
+	//click
+	this.searchPanel.addEventListener ("click", this.searchPanelClick(this));
 
 	//Gather text----------------------------------------------------------------------------------------------------
-	this.textElements = new Set ();
+	this.textElements = [];
 	this.collectTextElements(this.parentElem);
 };
 
 Search.prototype.collectTextElements = function (elem) {
 	if (!elem.children.length && hasOnlyText(elem)) {
-		this.textElements.add (new Tree(elem, {default: "highlight"}));
+		this.textElements.push(new Tree(this, elem, {default: "highlight"}));
 	}
 	else{
 		for (var i = 0; i < elem.children.length; i++) {
@@ -142,9 +145,9 @@ Search.prototype.setStyle = function (elem, styles) {
 		break;
 
 		//checkboxes style
-		case this.sequential:
+		case this.sequentialCheck:
 			var defaultStyle = "";
-			var style = this.getStyleFromArgument("sequential", styles, defaultStyle);
+			var style = this.getStyleFromArgument("sequentialCheck", styles, defaultStyle);
 		break;
 
 		case this.register:
