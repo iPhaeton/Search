@@ -35,6 +35,8 @@ Search.prototype.searchInputInput = function (self) {
 			};
 			//selection
 			for (var i = 0; i < self.textElements.length; i++) {
+				if (!self.textElements[i].isVisible()) continue;
+
 				if (self.found) {
 					if (self.textElements[i].select()) {
 						self.selectedTreeIndex = i;
@@ -99,7 +101,7 @@ Search.prototype.searchPanelClick = function (self) {
 		var target = findTarget(event.target, self.previousButton) || findTarget(event.target, self.nextButton);
 		if (target) {
 			target.dataset.clicked = "true";
-			sequentialCheck.checked = true;
+			self.sequentialCheck.checked = true;
 
 			//selection of previous, selection of next works already - delete?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 			if (self.selectedTreeIndex !== undefined) {
@@ -126,8 +128,21 @@ Search.prototype.searchPanelClick = function (self) {
 						i += increment;
 					};
 				};
+			}
+			else {
+				for (var i = 0; i < self.textElements.length; i++) {
+					if (!self.textElements[i].isVisible()) continue;
+
+					if (self.textElements[i].select()) {
+						self.selectedTreeIndex = i;
+						for (var j = i + 1; j < self.textElements.length; j++) {
+							self.textElements[j].deselectAll();
+						};
+						break;
+					};
+				};
 			};
-			
+
 			return;
 		};
 
@@ -136,16 +151,29 @@ Search.prototype.searchPanelClick = function (self) {
 };
 
 //select of search panel invoke
-function searchPanelFocus (event) {
-	if (findTarget(event.target, "close-button") || findTarget(event.target, "search-button")) return; //new search isn't needed if a click was on the close button
+Search.prototype.searchPanelFocus = function (self) {
+	return function (event) {
+		//new search isn't required if a click was on the close or navigation button
+		if (findTarget(event.target, self.closeButton) || findTarget(event.target, self.previousButton) || findTarget(event.target, self.nextButton)) return;
 
-	if (!findTarget(event.target, "search-input")) searchInput.focus();
-	
-	if (tree.found && searchInput.value)
-		tree.select("focus");
-	else if (!tree.found && searchInput.value) {
-		tree.search (searchInput.value);
-		tree.select("focus");
+		if (!findTarget(event.target, self.searchInput)) self.searchInput.focus();
+
+		if (self.found && self.searchInput.value) {
+			if (self.sequentialCheck.checked) {
+				self.textElements[self.selectedTreeIndex].select("focus");
+			}
+			else {
+				for (var i = 0; i < self.textElements.length; i++) {
+					self.textElements[i].select("focus");
+				};
+			};
+		}
+		else if (!self.found && self.searchInput.value) {
+			for (var i = 0; i < self.textElements.length; i++) {
+				self.textElements[i].search (searchInput.value);
+				self.textElements[i].select("focus");
+			};
+		};
 	};
 };
 
@@ -174,7 +202,9 @@ Search.prototype.showSearchPanel = function () {
 		
 		//remove the fake div
 		this.parentElem.removeChild (this.fakePanel);
-		//tree.deselectAll();
+		for (var i = 0; i < this.textElements.length; i++) {
+			this.textElements[i].deselectAll();
+		};
 	};
 };
 

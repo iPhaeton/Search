@@ -74,6 +74,8 @@ function Search (parent, styles) {
 	setInterval (this.setTimerOnScroll(this), 200);
 	//click
 	this.searchPanel.addEventListener ("click", this.searchPanelClick(this));
+	//focus
+	this.searchPanel.addEventListener("focus", this.searchPanelFocus(this), true);
 
 	//Gather text----------------------------------------------------------------------------------------------------
 	this.textElements = [];

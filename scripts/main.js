@@ -2,14 +2,8 @@
  * Created by Phaeton on 26.03.2016.
  */
 
-//search panel
-var searchPanel = document.getElementById ("search-panel");
-searchPanel.addEventListener("focus", searchPanelFocus, true);
-searchPanel.addEventListener("change", searchPanelChange);
 
-//text
-//var p = document.querySelector("p");
-//var tree = new Tree(p, {default: "highlight", complex: "fancy-highlight"});
+//searchPanel.addEventListener("change", searchPanelChange);
 
 //indicator
 var indicator = document.getElementById("indicator");
@@ -17,10 +11,6 @@ var indicator = document.getElementById("indicator");
 //check boxes
 var sequentialCheck = document.getElementById("sequential");
 var registerCheck = document.getElementsByTagName("register");
-
-//navigation buttons
-var previousButton = document.getElementById("previous-button");
-var nextButton = document.getElementById("next-button");
 
 //for debugging
 var debuggingDiv;

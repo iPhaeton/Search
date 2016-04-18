@@ -106,7 +106,7 @@ Tree.prototype.search = function (str) {
 //Selection of found matches after search
 //gets startFromTheEnd argument only when sequential selection came from another tree after pressing previous button
 Tree.prototype.select = function (callingEvent, startFromTheEnd) {
-	var offset = this.found.length,
+    var offset = this.found.length,
 		innerHTML = "",
 		i = 0,
 		selected = false,
@@ -134,7 +134,7 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
         };
 
 		if (callingEvent === "focus" && this.selectedPosition) {
-			this.justDeselected = false;
+			//this.justDeselected = false;
 			selectThis = this.selectedPosition;
 			lineWithMatch = this.selectedLine;
 		}
@@ -250,7 +250,7 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
         var highlight = this.parentElem.querySelector("span"),
             coords = highlight.getBoundingClientRect();
 
-        if (coords.top < searchPanel.offsetHeight || coords.bottom > document.documentElement.clientHeight) {
+        if (coords.top < this.selfPanel.searchPanel.offsetHeight || coords.bottom > document.documentElement.clientHeight) {
             window.scrollTo (0, Math.max (0, window.pageYOffset + coords.top - document.documentElement.clientHeight/5));
         };
 
@@ -322,7 +322,6 @@ Tree.prototype.showComplexStyle = function () {
 //Deselect all
 Tree.prototype.deselectAll = function () {
 	this.parentElem.innerHTML = this.text;
-    //this.justDeselected = true;
 };
 
 Tree.prototype.gatherHTML = function (i, startPoint, offset) {
@@ -350,6 +349,13 @@ Tree.prototype.markLines = function () {
             this.lines.add(i + 1);
         };
     };
+};
+
+Tree.prototype.isVisible = function () {
+    var coords = this.parentElem.getBoundingClientRect();
+    if (coords.bottom < 0 || coords.top > document.documentElement.clientHeight ||
+        coords.right < 0 || coords.left > document.documentElement.clientWidth) return false;
+    else return true;
 };
 
 //---------------------------------------------------------------------------------------------------------------------------------------
