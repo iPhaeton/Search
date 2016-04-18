@@ -104,8 +104,8 @@ Tree.prototype.search = function (str) {
 
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Selection of found matches after search
-//gets startHere argument only when sequential selection came from another tree after pressing next or previous button
-Tree.prototype.select = function (callingEvent, startHere) {
+//gets startFromTheEnd argument only when sequential selection came from another tree after pressing previous button
+Tree.prototype.select = function (callingEvent, startFromTheEnd) {
 	var offset = this.found.length,
 		innerHTML = "",
 		i = 0,
@@ -122,18 +122,15 @@ Tree.prototype.select = function (callingEvent, startHere) {
             selectThis, //if selection in visible area is found
             foundVisibleLine = false; //line in visible area has been found
 
-        if (startHere === "first") {
-            //find first selected position
-            for (var line = 0; line < this.lines.length; line++) {
-                selectThis = this.lines[line].getFirstPositionInLine();
+        if (startFromTheEnd) {
+            //find the last selected position
+            for (var line = this.lines.size - 1; line >= 0 ;line--) {
+                selectThis = this.lines[line].getLastPositionInLine();
                 if (selectThis) {
                     lineWithMatch = line;
                     break;
                 };
             };
-        }
-        else if (startHere === "last") {
-            //find last selected position
         };
 
 		if (callingEvent === "focus" && this.selectedPosition) {

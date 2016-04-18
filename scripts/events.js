@@ -105,20 +105,21 @@ Search.prototype.searchPanelClick = function (self) {
 			if (self.selectedTreeIndex !== undefined) {
 				if (!self.textElements[self.selectedTreeIndex].select()){
 					self.textElements[self.selectedTreeIndex].deselectAll();
+
 					if (target === self.previousButton) {
 						var end = -1,
 							increment = -1,
-							pos = "last";
+							startFromTheEnd = true;
 					}
 					else {
 						var end = self.textElements.length + 1,
 							increment = 1,
-							pos = "first";
-					}
+							startFromTheEnd = false; //tells the tree, that that selection should be executed counting from the last found position
+					};
 
 					var i = self.selectedTreeIndex + increment;
 					while (i !== end) {
-						if (self.textElements[i].select("click", pos)) {
+						if (self.textElements[i].select("click", startFromTheEnd)) {
 							self.selectedTreeIndex = i;
 							break;
 						};
@@ -126,6 +127,7 @@ Search.prototype.searchPanelClick = function (self) {
 					};
 				};
 			};
+			
 			return;
 		};
 
