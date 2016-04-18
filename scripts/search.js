@@ -249,7 +249,7 @@ Tree.prototype.select = function (callingEvent, startHere) {
 	this.parentElem.innerHTML = innerHTML;
 
     //in case, if selected text isn't visible
-    if (sequentialCheck.checked) {
+    if (this.selfPanel.sequentialCheck.checked) {
         var highlight = this.parentElem.querySelector("span"),
             coords = highlight.getBoundingClientRect();
 
