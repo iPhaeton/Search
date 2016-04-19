@@ -180,11 +180,16 @@ Search.prototype.searchPanelFocus = function (self) {
 
 Search.prototype.searchPanelChange = function (self) {
 	return function (event) {
-		if (findTarget(event.target, self.sequentialCheck) && self.searchInput.value) {
+		/*if (findTarget(event.target, self.sequentialCheck) && self.searchInput.value) {
 			for (var i = 0; i < self.textElements.length; i++) {
-				if (self.textElements[i].isVisible()) self.textElements[i].select();
+				if (self.textElements[i].isVisible()) {
+                    if (self.textElements[i].select()) {
+                        self.selectedTreeIndex = i;
+                        break;
+                    };
+                }
 			};
-		};
+		};*/
 	};
 };
 

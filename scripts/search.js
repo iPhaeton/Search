@@ -172,7 +172,6 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
                     //to select the first visible line
                     if (!foundVisibleLine) {
                         lineWithMatch = j;
-                        foundVisibleLine = true;
                     };
 
                     //check horizontal position
@@ -180,6 +179,7 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
                         if (!this.lines[j].foundPositions.hasOwnProperty(point)) continue;
                         var horizontalPosition = this.lines.symbolMeasurements.width * (+point - this.lines[j].index);
                         if (horizontalPosition + parentCoords.left >= 0 && horizontalPosition + parentCoords.left <= document.documentElement.clientWidth) {
+                            foundVisibleLine = true;
                             selectThis = +point;
                             break;
                         };
