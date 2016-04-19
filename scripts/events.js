@@ -35,13 +35,17 @@ Search.prototype.searchInputInput = function (self) {
 			};
 			//selection
 			for (var i = 0; i < self.textElements.length; i++) {
-				if (!self.textElements[i].isVisible()) continue;
+				if (self.checkVisibility && !self.textElements[i].isVisible()) continue;
 
 				if (self.found) {
 					if (self.textElements[i].select()) {
 						self.selectedTreeIndex = i;
+                        self.checkVisibility = true;
 						break;
-					};
+					}
+                    else {
+                        self.checkVisibility = false;
+                    };
 				}
 				else {
 					self.selectedTreeIndex = undefined;

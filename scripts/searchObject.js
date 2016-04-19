@@ -3,6 +3,7 @@ function Search (parent, styles) {
 	this.parentElem = parent;
 	this.found = false;
 	this.selectedTreeIndex = undefined; //tree, on which selection stopped during sequential selection
+    this.checkVisibility = true;
 
 	//Styles----------------------------------------------------------------------------------------------------------
 	//search panel
