@@ -162,6 +162,9 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
         }
         //select new
         else {
+			this.selfPanel.previousButton.dataset.clicked = "";
+			this.selfPanel.nextButton.dataset.clicked = "";
+			
             for (var j = 0; j < this.lines.size; j++) {
                 //match is found in the visible area
                 if (this.lines[j].computedTop + parentCoords.top > this.selfPanel.searchPanel.offsetHeight && this.lines[j].foundPositions.size &&

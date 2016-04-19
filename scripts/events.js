@@ -100,14 +100,15 @@ Search.prototype.searchPanelClick = function (self) {
 		//navigation buttons
 		var target = findTarget(event.target, self.previousButton) || findTarget(event.target, self.nextButton);
 		if (target) {
+			//self.previousButton.dataset.clicked = false;
+			//self.nextButton.dataset.clicked = false;
+			
 			target.dataset.clicked = "true";
 			self.sequentialCheck.checked = true;
 
 			//selection of previous, selection of next works already - delete?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 			if (self.selectedTreeIndex !== undefined) {
 				if (!self.textElements[self.selectedTreeIndex].select()){
-					self.textElements[self.selectedTreeIndex].deselectAll();
-
 					if (target === self.previousButton) {
 						var end = -1,
 							increment = -1,
@@ -122,6 +123,7 @@ Search.prototype.searchPanelClick = function (self) {
 					var i = self.selectedTreeIndex + increment;
 					while (i !== end) {
 						if (self.textElements[i].select("click", startFromTheEnd)) {
+							self.textElements[self.selectedTreeIndex].deselectAll();
 							self.selectedTreeIndex = i;
 							break;
 						};
@@ -146,7 +148,7 @@ Search.prototype.searchPanelClick = function (self) {
 			return;
 		};
 
-		if (findTarget(event.target, "search-panel")) return;
+		if (findTarget(event.target, self.searchPanel)) return;
 	};
 };
 
@@ -209,17 +211,17 @@ Search.prototype.showSearchPanel = function () {
 };
 
 function getChar(event) {
-  if (event.which == null) { // IE
-    if (event.keyCode < 32) return null; // ����. ������
+  if (event.which == null) {
+    if (event.keyCode < 32) return null;
     return String.fromCharCode(event.keyCode)
   };
 
-  if (event.which != 0 && event.charCode != 0) { // ��� ����� IE
-    if (event.which < 32) return null; // ����. ������
-    return String.fromCharCode(event.which); // ���������
+  if (event.which != 0 && event.charCode != 0) {
+    if (event.which < 32) return null;
+    return String.fromCharCode(event.which);
   };
 
-  return null; // ����. ������
+  return null;
 };
 
 function findTarget (target, wanted) { //arguments - initial target and wanted target's class or id
