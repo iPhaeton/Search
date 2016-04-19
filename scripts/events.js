@@ -56,7 +56,7 @@ Search.prototype.searchInputInput = function (self) {
 			self.selectedTreeIndex = undefined;
 		};
 
-		//showQuantity();
+		self.showQuantity();
 	};
 };
 
@@ -178,8 +178,14 @@ Search.prototype.searchPanelFocus = function (self) {
 	};
 };
 
-function searchPanelChange (event) {
-	if (findTarget(event.target, "sequential") && searchInput.value) tree.select();
+Search.prototype.searchPanelChange = function (self) {
+	return function (event) {
+		if (findTarget(event.target, self.sequentialCheck) && self.searchInput.value) {
+			for (var i = 0; i < self.textElements.length; i++) {
+				if (self.textElements[i].isVisible()) self.textElements[i].select();
+			};
+		};
+	};
 };
 
 //---------------------------------------------------------------------------------------------------------------------------------------
@@ -231,7 +237,13 @@ function findTarget (target, wanted) { //arguments - initial target and wanted t
 };
 
 //Show amount of found matches
-function showQuantity () {
-    if (searchInput.value) indicator.textContent = tree.lines.quantity;
-    else indicator.textContent = "";
+Search.prototype.showQuantity = function () {
+    if (this.searchInput.value) {
+		var quantity = 0;
+		for (var i = 0; i < this.textElements.length; i++) {
+			 quantity += this.textElements[i].lines.quantity;
+		};
+		this.indicator.textContent = quantity;
+	}
+    else this.indicator.textContent = "";
 };

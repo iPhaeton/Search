@@ -43,13 +43,13 @@ function Search (parent, styles) {
 	this.searchPanel.appendChild(this.register);
 	this.registerText = document.createTextNode("Allow for register");
 	this.searchPanel.appendChild(this.registerText);
-
+	
 	//close button
 	this.closeButton = document.createElement("div");
 	this.closeButton.tabIndex = "2";
 	this.setStyle(this.closeButton, styles);
 	this.searchPanel.appendChild(this.closeButton);
-
+	
 	//indicator
 	this.indicator = document.createElement("div");
 	this.setStyle(this.indicator, styles);
@@ -76,6 +76,8 @@ function Search (parent, styles) {
 	this.searchPanel.addEventListener ("click", this.searchPanelClick(this));
 	//focus
 	this.searchPanel.addEventListener("focus", this.searchPanelFocus(this), true);
+	//change checkbox
+	this.searchPanel.addEventListener("change", this.searchPanelChange(this));
 
 	//Gather text----------------------------------------------------------------------------------------------------
 	this.textElements = [];
@@ -167,8 +169,8 @@ Search.prototype.setStyle = function (elem, styles) {
 		break;
 
 		//indicator style
-		case this.register:
-			var defaultStyle = "";
+		case this.indicator:
+			var defaultStyle = "float:right";
 			var style = this.getStyleFromArgument("indicator", styles, defaultStyle);
 		break;
 	};
