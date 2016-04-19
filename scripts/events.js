@@ -1,19 +1,19 @@
 //Invoke search panel
 Search.prototype.keyDown = function (self) {
 	return function (event) {
-		if ((event.ctrlKey && event.keyCode === 70) || (event.keyCode === 27 && !searchPanel.hidden)) { //Crtl+F; Esc
+		if ((event.ctrlKey && event.keyCode === 70) || (event.keyCode === 27 && !self.searchPanel.hidden)) { //Crtl+F; Esc
 			self.showSearchPanel ();
 			event.preventDefault ();
 			return;
 		};
 
-		/*if (event.keyCode === 13 && document.activeElement === searchInput) { //Enter
-		 nextButton.dataset.clicked = "true";
-		 sequentialCheck.checked = true;
-		 tree.select();
-		 event.preventDefault ();
-		 return;
-		 };*/
+		if (event.keyCode === 13 && document.activeElement === self.searchInput) { //Enter
+			event.preventDefault (event);
+			self.nextButton.dataset.clicked = "true";
+			self.sequentialCheck.checked = true;
+			(self.searchPanelClick(self))(event);//tree.select();
+			return;
+		};
 	};
 };
 
@@ -98,15 +98,13 @@ Search.prototype.searchPanelClick = function (self) {
 		};
 
 		//navigation buttons
-		var target = findTarget(event.target, self.previousButton) || findTarget(event.target, self.nextButton);
+		if (event.keyCode === 13) var target = self.nextButton;
+		else var target = findTarget(event.target, self.previousButton) || findTarget(event.target, self.nextButton);
 		if (target) {
-			//self.previousButton.dataset.clicked = false;
-			//self.nextButton.dataset.clicked = false;
-			
 			target.dataset.clicked = "true";
 			self.sequentialCheck.checked = true;
 
-			//selection of previous, selection of next works already - delete?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+			//selection of the next or previous during sequential selection
 			if (self.selectedTreeIndex !== undefined) {
 				if (!self.textElements[self.selectedTreeIndex].select()){
 					if (target === self.previousButton) {
@@ -131,6 +129,7 @@ Search.prototype.searchPanelClick = function (self) {
 					};
 				};
 			}
+			//single selection during sequential selection
 			else {
 				for (var i = 0; i < self.textElements.length; i++) {
 					if (!self.textElements[i].isVisible()) continue;
