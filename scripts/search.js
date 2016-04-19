@@ -106,7 +106,10 @@ Tree.prototype.search = function (str) {
 //Selection of found matches after search
 //gets startFromTheEnd argument only when sequential selection came from another tree after pressing previous button
 Tree.prototype.select = function (callingEvent, startFromTheEnd) {
-    if (this.found === "") return;
+    if (this.found === "") {
+        this.deselectAll();
+        return;
+    };
 
     var offset = this.found.length,
 		innerHTML = "",
