@@ -32,4 +32,4 @@ To do:
 About style tables: http://professorweb.ru/my/javascript/js_theory/level2/2_4.php
 */
 
-var searchObject = new Search(document.body);
+var searchObject = new Search(document.body, {complexStyle: ".fancy-highlight"});

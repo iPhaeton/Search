@@ -9,8 +9,7 @@ function Tree (selfPanel, parentElem, style) {
     this.lines.measureLines();
 
     //set style
-    this.defStyle = style.default || "highlight-default";
-	this.cmplxStyle = style.complex;
+    this.style = style;
 
     var current,
         previous,
@@ -272,7 +271,7 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
     };
 
 	//show complex style
-    if (this.cmplxStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
+    if (this.style.complexStyle) this.parentElem.innerHTML = this.text + this.showComplexStyle();
 
     return stopHere;
 
@@ -286,7 +285,7 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
 
 //Add divs to show complex style
 Tree.prototype.showComplexStyle = function () {
-	var spans = this.parentElem.getElementsByClassName (this.defStyle);
+	var spans = this.parentElem.getElementsByClassName ("selection-span");
 		innerHTML = "",
 		parentCoodrs = this.parentElem.getBoundingClientRect();
 		
@@ -321,7 +320,7 @@ Tree.prototype.showComplexStyle = function () {
 			else break;
 		};
 		
-		innerHTML += "<div class='" + this.cmplxStyle + "' style='white-space:pre; position:absolute; top:" + (coords.top - parentCoodrs.top - topOffset) + "px; left:" + 
+		innerHTML += "<div class='slection-div' style='" + this.style.complexStyle + "white-space:pre; position:absolute; top:" + (coords.top - parentCoodrs.top - topOffset) + "px; left:" +
 		(coords.left + window.pageXOffset - leftOffset) + "px'>" + text + "</div>";
 		
 		i = j - 1;
@@ -342,10 +341,10 @@ Tree.prototype.gatherHTML = function (i, startPoint, offset) {
     var innerHTML =  this.text.slice (i, startPoint);
 	
 	//if text in a span contains spaces, words and spaces go into different spans (to deal with multiline selection)
-	innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre'>" + spanTextContents[0] + "</span>";
+	innerHTML += "<span class='selection-span' data-position='" + startPoint + "' style='white-space: pre;" + this.style.simpleStyle + "'>" + spanTextContents[0] + "</span>";
 	var float  = "float: left";
     for (var i = 1; i < spanTextContents.length; i++) {
-        innerHTML += "<span class='" + this.defStyle + "' data-position='" + startPoint + "' style='white-space: pre" + float +"'>" + spanTextContents[i] + "</span>";
+        innerHTML += "<span class='selection-span' data-position='" + startPoint + "' style='white-space: pre;" + this.style.simpleStyle + float +"'>" + spanTextContents[i] + "</span>";
     };
 
     return innerHTML;

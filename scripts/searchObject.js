@@ -63,6 +63,10 @@ function Search (parent, styles) {
 	this.clearOffset.style.clear = "both";
 	this.parentElem.appendChild(this.clearOffset);
 
+	//selection style
+	this.selectionStyle = {};
+	this.setSelectionStyle(styles);
+
 	//Events----------------------------------------------------------------------------------------------------------
 	//invoke panel
 	this.parentElem.addEventListener ("keydown", this.keyDown(this));
@@ -87,7 +91,7 @@ function Search (parent, styles) {
 
 Search.prototype.collectTextElements = function (elem) {
 	if (!elem.children.length && hasOnlyText(elem)) {
-		this.textElements.push(new Tree(this, elem, {default: "highlight"}));
+		this.textElements.push(new Tree(this, elem, {simpleStyle: this.selectionStyle.simpleStyle, complexStyle: this.selectionStyle.complexStyle}));
 	}
 	else{
 		for (var i = 0; i < elem.children.length; i++) {
@@ -178,6 +182,19 @@ Search.prototype.setStyle = function (elem, styles) {
 	
 	elem.style.cssText = style;
 	if (!elem.style.cssText) elem.style.cssText = defaultStyle;
+};
+
+Search.prototype.setSelectionStyle = function (styles) {
+	var defaultStyle = "background-color: rgb(150, 255, 100)";
+
+	if (styles instanceof Object) {
+		var complexStyle = this.getStyleFromArgument("complexStyle", styles, defaultStyle);
+		if (complexStyle) var simpleStyle = "";
+		else simpleStyle = this.getStyleFromArgument("simpleStyle", styles, defaultStyle);
+	};
+
+	this.selectionStyle.complexStyle = complexStyle;
+	this.selectionStyle.simpleStyle = simpleStyle || defaultStyle;
 };
 
 Search.prototype.getStyleFromArgument = function (selector, styles, defaultStyle) {
