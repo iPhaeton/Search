@@ -29,11 +29,13 @@ Search.prototype.keyPress = function (event) {
 Search.prototype.searchInputInput = function (self) {
 	return function (event) {
 		self.checkVisibility = true;
+		self.found = false;
 
 		if (this.value.length) {
 			//search
 			for (var i = 0; i < self.textElements.length; i++) {
-				self.found = self.textElements[i].search (this.value);
+				var foundText = self.textElements[i].search (this.value);
+				if (!self.found) self.found = foundText
 			};
 			//selection
 			for (var i = 0; i < self.textElements.length; i++) {
