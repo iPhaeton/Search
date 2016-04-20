@@ -99,7 +99,11 @@ Tree.prototype.search = function (str) {
     };
 
 	//alert(performance.now() - timeStart);
-    return this.found;
+    if (this.lines.quantity) return this.found;
+    else {
+        this.found = "";
+        return false;
+    }
 };
 
 //Selection-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

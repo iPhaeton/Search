@@ -136,14 +136,18 @@ Search.prototype.searchPanelClick = function (self) {
 			//single selection during sequential selection
 			else {
 				for (var i = 0; i < self.textElements.length; i++) {
-					if (!self.textElements[i].isVisible()) continue;
+					if (self.checkVisibility && !self.textElements[i].isVisible()) continue;
 
 					if (self.textElements[i].select()) {
 						self.selectedTreeIndex = i;
 						for (var j = i + 1; j < self.textElements.length; j++) {
 							self.textElements[j].deselectAll();
 						};
+						self.checkVisibility = true;
 						break;
+					}
+					else {
+						self.checkVisibility = false;
 					};
 				};
 			};
