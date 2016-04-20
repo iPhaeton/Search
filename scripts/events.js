@@ -28,6 +28,8 @@ Search.prototype.keyPress = function (event) {
 //Search and select
 Search.prototype.searchInputInput = function (self) {
 	return function (event) {
+		self.checkVisibility = true;
+
 		if (this.value.length) {
 			//search
 			for (var i = 0; i < self.textElements.length; i++) {
@@ -95,6 +97,8 @@ Search.prototype.executeOnScroll = function (self) {
 //Navigiton buttons
 Search.prototype.searchPanelClick = function (self) {
 	return function (event) {
+		self.checkVisibility = true;
+
 		//close
 		if (findTarget(event.target, self.closeButton)) {
 			self.showSearchPanel();
@@ -179,7 +183,7 @@ Search.prototype.searchPanelFocus = function (self) {
 		}
 		else if (!self.found && self.searchInput.value) {
 			for (var i = 0; i < self.textElements.length; i++) {
-				self.textElements[i].search (searchInput.value);
+				self.textElements[i].search (self.searchInput.value);
 				self.textElements[i].select("focus");
 			};
 		};
