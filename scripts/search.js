@@ -341,10 +341,11 @@ Tree.prototype.gatherHTML = function (i, startPoint, offset) {
     var innerHTML =  this.text.slice (i, startPoint);
 	
 	//if text in a span contains spaces, words and spaces go into different spans (to deal with multiline selection)
-	innerHTML += "<span class='selection-span' data-position='" + startPoint + "' style='white-space: pre;" + this.style.simpleStyle + "'>" + spanTextContents[0] + "</span>";
-	var float  = "float: left";
+	var str = "<span class='selection-span' data-position='" + startPoint + "' style='white-space: pre;" + this.style.simpleStyle + "'>" + spanTextContents[0] + "</span>";
+    innerHTML += str;
+	//var float  = "float: left";
     for (var i = 1; i < spanTextContents.length; i++) {
-        innerHTML += "<span class='selection-span' data-position='" + startPoint + "' style='white-space: pre;" + this.style.simpleStyle + float +"'>" + spanTextContents[i] + "</span>";
+        innerHTML += "<span class='selection-span' data-position='" + startPoint + "' style='" + this.style.simpleStyle + "'>" + spanTextContents[i] + "</span>";
     };
 
     return innerHTML;
