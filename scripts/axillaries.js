@@ -155,7 +155,7 @@ Line.prototype.getNextPosition = function (index) {
 
 //returns the previous to the index position
 Line.prototype.getPreviousPosition = function (index) {
-    if (this.foundPositions[index].prev) return {selection: this.foundPositions[index].prev, line: this.selfIndex};
+    if (this.foundPositions[index].prev !== null) return {selection: this.foundPositions[index].prev, line: this.selfIndex};
     else {
         for (var i = this.selfIndex - 1; i >= 0; i--) {
             var toReturn = this.parent[i].getLastPositionInLine();
@@ -173,7 +173,7 @@ function SearchResults () {
 };
 
 SearchResults.prototype.add = function (item) {
-    if (this._previous) {
+    if (this._previous !== undefined) {
         this[item] = {prev: this._previous, next: null};
         this[this._previous].next = item;
     }

@@ -141,13 +141,13 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
             };
         };
 
-		if (callingEvent === "focus" && this.selectedPosition) {
+		if (callingEvent === "focus" && this.selectedPosition !== undefined) {
 			//this.justDeselected = false;
 			selectThis = this.selectedPosition;
 			lineWithMatch = this.selectedLine;
 		}
         //select previous
-        else if (this.selfPanel.previousButton.dataset.clicked && this.selectedPosition) {
+        else if (this.selfPanel.previousButton.dataset.clicked && this.selectedPosition !== undefined) {
             this.selfPanel.previousButton.dataset.clicked = "";
 			
 			var previousToSelect = this.lines[this.selectedLine].getPreviousPosition (this.selectedPosition);
@@ -158,7 +158,7 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
 			else return;
         }
         //select next
-        else if (this.selfPanel.nextButton.dataset.clicked && this.selectedPosition) {
+        else if (this.selfPanel.nextButton.dataset.clicked && this.selectedPosition !== undefined) {
             this.selfPanel.nextButton.dataset.clicked = "";
 			
 			var nextToSelect = this.lines[this.selectedLine].getNextPosition (this.selectedPosition);
@@ -198,13 +198,13 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
                 //remember the match before or after the visible area
                 else if (this.lines[j].foundPositions.size) lineWithMatch = j;
 
-                if (selectThis) break;
+                if (selectThis !== undefined) break;
             };
         };
 
         //actual selection
         var startPoint = selectThis || this.lines[lineWithMatch].getFirstPositionInLine();
-        if (startPoint) {
+        if (startPoint !== undefined) {
             innerHTML += this.gatherHTML(i, startPoint, offset);
             i = startPoint + offset;
             selected = true;
