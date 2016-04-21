@@ -186,7 +186,8 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
                     for (var point in this.lines[j].foundPositions) {
                         if (!this.lines[j].foundPositions.hasOwnProperty(point)) continue;
                         var horizontalPosition = this.lines.symbolMeasurements.width * (+point - this.lines[j].index);
-                        if (horizontalPosition + parentCoords.left >= 0 && horizontalPosition + parentCoords.left <= document.documentElement.clientWidth) {
+                        if ((horizontalPosition + parentCoords.left >= 0 && horizontalPosition + parentCoords.left <= -document.documentElement.clientWidth) ||
+                            getComputedStyle(this.parentElem).whiteSpace === "pre-wrap") {
                             foundVisibleLine = true;
                             selectThis = +point;
                             break;

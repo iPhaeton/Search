@@ -44,6 +44,9 @@ Search.prototype.searchInputInput = function (self) {
 				if (self.found) {
 					if (self.textElements[i].select()) {
 						self.selectedTreeIndex = i;
+						for (var j = i + 1; j < self.textElements.length; j++) {
+							self.textElements[j].deselectAll();
+						};
                         self.checkVisibility = true;
 						break;
 					}
@@ -195,7 +198,7 @@ Search.prototype.searchPanelFocus = function (self) {
 Search.prototype.searchPanelChange = function (self) {
 	return function (event) {
 		if (findTarget(event.target, self.sequentialCheck) && self.searchInput.value) {
-            (self.searchInputInput(self)).call(self.searchInput);
+            (self.searchInputInput(self)).call(self.searchInput, event);
 		};
 	};
 };
