@@ -169,7 +169,7 @@ Tree.prototype.select = function (callingEvent, startFromTheEnd) {
 			else return;
         }
         //select new
-        else {
+        else if (!startFromTheEnd) {
 			this.selfPanel.previousButton.dataset.clicked = "";
 			this.selfPanel.nextButton.dataset.clicked = "";
 			
