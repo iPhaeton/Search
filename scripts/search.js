@@ -74,6 +74,7 @@ Tree.prototype.search = function (str) {
         previousSymbol = currentSymbol;
     if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) {
         this.found = "";
+        this.lines.quantity = 0;
         return false;
     };
 	this.lines.setResults(this[currentSymbol].children[nextSymbol]);
@@ -84,6 +85,7 @@ Tree.prototype.search = function (str) {
         nextSymbol = this.found.charAt(i + 1);
         if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) {
             this.found = "";
+            this.lines.quantity = 0;
             return false;
         };
 
@@ -101,6 +103,7 @@ Tree.prototype.search = function (str) {
     if (this.lines.quantity) return this.found;
     else {
         this.found = "";
+        this.lines.quantity = 0;
         return false;
     }
 };
