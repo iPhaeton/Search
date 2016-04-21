@@ -294,11 +294,11 @@ Tree.prototype.showComplexStyle = function () {
 		parentCoodrs = this.parentElem.getBoundingClientRect();
 		
 	//check borders
-	spans[0].classList.add (this.cmplxStyle);
+	spans[0].style.cssText = this.style.complexStyle;
 	var style = getComputedStyle(spans[0]),
 		leftOffset = parseInt(style.paddingLeft) + parseInt(style.marginLeft) + parseInt(style.borderLeftWidth);
 		topOffset = parseInt(style.paddingTop) + parseInt(style.marginTop) + parseInt(style.borderTopWidth);
-	spans[0].classList.remove (this.cmplxStyle);
+	spans[0].style.cssText = "";
 	
 	/*for (var i = 0; i < spans.length; i++) {
 		var coords = spans[i].getBoundingClientRect();
