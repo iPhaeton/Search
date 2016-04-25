@@ -8,7 +8,7 @@ function Search (parent, styles) {
 	//Styles----------------------------------------------------------------------------------------------------------
 	//search panel
 	this.searchPanel = document.createElement ("form");
-	this.searchPanel.tabindex = "1";
+	this.searchPanel.tabIndex = "1";
 	this.setStyle(this.searchPanel, styles);
 
 	//search input
