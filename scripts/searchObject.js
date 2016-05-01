@@ -1,3 +1,21 @@
+//Search has 2 arguments:
+//parent - a DOM element, wich will contain search panel and in wich search will be executed
+//styles - object with styles of all elements,
+//  		styles may be passed explicitely as a CSS text,
+//			implicitely as name of a CSS class
+//			or not passed at all, then default styles will be used
+//{
+//	searchPanel: style - search panel itself
+//	searchInput: style - input for required string to search
+//	previousButton: style - button of sequential search (find previous)
+//	nextButton: style - button of sequential search (find next)
+//	sequentialCheck: style - a checkbox to mark, that seaquential search is required
+//	register: style - a checkbox to mark, if allowing for register is required
+//	closeButton: style - button to close search panel
+//	indicatoe: style - an indicator to show a current number of matches
+//	hide: true/false - a switch to show search panel immideately after it was created or to hide it
+//}
+
 function Search (parent, styles) {
 	//check for DOM Element !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	this.parentElem = parent;
