@@ -144,8 +144,12 @@ Search.prototype.searchPanelClick = function (self) {
 			}
 			//single selection during sequential selection
 			else {
+				var toReturn; //number of a textElement with found match, to wich I return, if there are no matches in or after visible textElement
 				for (var i = 0; i < self.textElements.length; i++) {
-					if (self.checkVisibility && !self.textElements[i].isVisible()) continue;
+					if (self.checkVisibility && !self.textElements[i].isVisible()) {
+						if (self.textElements[i].lines.quantity) toReturn = i;
+						continue;
+					};
 
 					if (self.textElements[i].select()) {
 						self.selectedTreeIndex = i;
@@ -153,12 +157,15 @@ Search.prototype.searchPanelClick = function (self) {
 							self.textElements[j].deselectAll();
 						};
 						self.checkVisibility = true;
+						toReturn = undefined;
 						break;
 					}
 					else {
 						self.checkVisibility = false;
 					};
 				};
+
+				if (toReturn !== undefined) self.textElements[toReturn].select();
 			};
 
 			return;

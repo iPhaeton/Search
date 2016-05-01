@@ -2,19 +2,10 @@
  * Created by Phaeton on 26.03.2016.
  */
 
-
-//searchPanel.addEventListener("change", searchPanelChange);
-
-//indicator
-var indicator = document.getElementById("indicator");
-
 //for debugging
 var debuggingDiv;
 
 //------------------------------------------------------------------------------------------------------
-/*
-10. Reload on Enter
-*/
 
 /*
 Errors:
