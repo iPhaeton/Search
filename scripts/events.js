@@ -140,7 +140,13 @@ Search.prototype.searchPanelClick = function (self) {
 						};
 						i += increment;
 					};
-				};
+				}
+				//deselect all after
+				else {
+					for (var j = self.selectedTreeIndex + 1; j < self.textElements.length; j++) {
+						self.textElements[j].deselectAll();
+					};
+				}
 			}
 			//single selection during sequential selection
 			else {
