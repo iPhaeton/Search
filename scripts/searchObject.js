@@ -2,7 +2,7 @@
 //parent - a DOM element, wich will contain search panel and in wich search will be executed
 //styles - object with styles of all elements,
 //  		styles may be passed explicitely as a CSS text,
-//			implicitely as name of a CSS class
+//			implicitely as CSS selector
 //			or not passed at all, then default styles will be used
 //{
 //	searchPanel: style - search panel itself
@@ -14,6 +14,8 @@
 //	closeButton: style - button to close search panel
 //	indicatoe: style - an indicator to show a current number of matches
 //	hide: true/false - a switch to show search panel immideately after it was created or to hide it
+//	simpleStyle: style - style of selection with spans (or default)
+//	complexStyle: style - style of selection with divs, if set replaces simpleStyle or default
 //}
 
 function Search (parent, styles) {

@@ -19,24 +19,25 @@ body {
 	width:20px;
 	height:20px;
 	float:right;
-	background:url(images/gtk-close.png);
+	background-image:url(images/gtk-close.png);
 	background-size:cover;
 }
 
-.search-button {
+.previous-button {
 	width: 20px;
 	height: 20px;
 	display: inline-block;
 	margin-left: 5px;
-}
-
-#previous-button {
-	background:url(images/arrow_left.png);
+	background-image:url(images/arrow_left.png);
 	background-size:cover;
 }
 
-#next-button {
-	background:url(images/arrow_right.png);
+.next-button {
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	margin-left: 5px;
+	background-image:url(images/arrow_right.png);
 	background-size:cover;
 }
 

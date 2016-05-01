@@ -23,4 +23,9 @@ To do:
 About style tables: http://professorweb.ru/my/javascript/js_theory/level2/2_4.php
 */
 
-var searchObject = new Search(document.body, {complexStyle: ".fancy-highlight"});
+var searchObject = new Search(document.body, {
+    previousButton: ".previous-button",
+    nextButton: ".next-button",
+    closeButton: ".close-button",
+    complexStyle: ".fancy-highlight"
+});
