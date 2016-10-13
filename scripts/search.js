@@ -62,7 +62,7 @@ Tree.prototype.search = function (str) {
     this.lines.clearResults();
 
 	var j = 0;
-    if (this.found.length === 1) {
+    if (this.found.length === 1 && this[this.found]) {
 		this.lines.setResults(this[this.found].indecies);
 		//alert(performance.now() - timeStart);
 		return this.found;
