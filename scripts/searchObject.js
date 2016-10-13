@@ -56,14 +56,14 @@ function Search (parent, styles) {
 	this.sequentialCheck.type = "checkbox";
 	this.setStyle(this.sequentialCheck, styles);
 	this.searchPanel.appendChild(this.sequentialCheck);
-	this.sequentialCheckText = document.createTextNode("Search sequentially");
+	this.sequentialCheckText = document.createTextNode("Sequential search");
 	this.searchPanel.appendChild(this.sequentialCheckText);
 
 	this.register = document.createElement("input");
 	this.register.type = "checkbox";
 	this.setStyle(this.register, styles);
 	this.searchPanel.appendChild(this.register);
-	this.registerText = document.createTextNode("Allow for register");
+	this.registerText = document.createTextNode("Case");
 	this.searchPanel.appendChild(this.registerText);
 	
 	//close button
