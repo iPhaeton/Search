@@ -2,6 +2,11 @@
 
 http://iphaeton.github.io/Search/
 
+Taining project. A search panel for a text page that performs basic functionality of browser’s standard search panel.
+
+Language: JavaScript;
+Git, HTML, CSS
+
 1. Access search panel by pressing Ctrl+F or by clicking a button at the right top corner.
 2. Hide search panel by pressing Esc or by clicking a button at the right sude of the panel.
 3. Search is executed on every input.
