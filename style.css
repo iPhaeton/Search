@@ -66,3 +66,21 @@ p {
 	position: relative;
 	white-space: pre-wrap;
 }
+
+.search-open {
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 30px;
+	height: 30px;
+    background: transparent;
+    color: #fff;
+    border: none;
+    margin: 5px 5px 0 0;
+	background: url(images/search-button.jpg) no-repeat center/cover;
+	z-index: 1;
+}
+
+.search-open:hover {
+	cursor: pointer;
+}
