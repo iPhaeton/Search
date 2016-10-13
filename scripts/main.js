@@ -29,3 +29,8 @@ var searchObject = new Search(document.body, {
     closeButton: ".close-button",
     complexStyle: ".fancy-highlight"
 });
+
+var searchOpen = document.querySelector(".search-open");
+searchOpen.onclick = function () {
+	searchObject.showSearchPanel();
+}

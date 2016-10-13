@@ -1,4 +1,5 @@
 //Search has 2 arguments:
+//Search has 2 arguments:
 //parent - a DOM element, wich will contain search panel and in wich search will be executed
 //styles - object with styles of all elements,
 //  		styles may be passed explicitely as a CSS text,
